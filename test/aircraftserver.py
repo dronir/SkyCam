@@ -2,6 +2,10 @@ import socket
 from sys import exit
 import time
 
+# This program starts a server on port 7879, sending the same piece of XML
+# flight date every second. This can be used as a simple test server for
+# aircraft.py
+
 DATA = b"<MODESMESSAGE><DATETIME>20070622141943</DATETIME><MODES>400F2B</MODES><CALLSIGN>OVW84</CALLSIGN><ALTITUDE>12030</ALTITUDE><GROUNDSPEED>451</GROUNDSPEED><TRACK>234</TRACK><VRATE>0</VRATE><AIRSPEED></AIRSPEED><LATITUDE>60.0</LATITUDE><LONGITUDE>25.0</LONGITUDE></MODESMESSAGE>"
 
 def serve():
