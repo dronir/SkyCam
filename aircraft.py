@@ -5,8 +5,12 @@ from ephem import separation
 from numpy import sqrt, sin, cos, array, cross, eye, dot
 from scipy.linalg import expm3, norm
 
-# The AircraftHandler maintains a list of nearby aircraft by listening to the RadarBox,
-# and draws the aircraft on the given Axes object when requested.
+# The AircraftHandler maintains a list of nearby aircraft, from data given by an
+# AircraftListener, and draws the aircraft on the given Axes object when
+# requested.
+
+# The AircraftListener listens to the AirNav RadarBox XML stream, parsing and
+# sending the aircraft updates to an AircraftHandler whenever they arrive.
 
 # Degrees to radians conversion factor
 RAD = 0.017453293
