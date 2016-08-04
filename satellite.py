@@ -2,6 +2,9 @@
 import ephem
 import datetime
 
+# The SatelliteHandler maintains a list of satellites and their locations, and draws them
+# on the given Axes object when requested.
+
 def get_Hovi():
     """Returns a PyEphem observer for Metsähovi."""
     Hovi = ephem.Observer()

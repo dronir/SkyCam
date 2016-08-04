@@ -3,10 +3,12 @@ from sys import exit
 import matplotlib.pyplot as plt
 import toml
 
+# The CameraHandler keeps an up-to-date version of the fullsky image and draws it on the 
+# given Axes object when requested.
+
 class CameraHandler:
     def __init__(self, ax, config):
         self.ax = ax
-#        self.ax.set_axis_off()
         self.ax.set_xticks([])
         self.ax.set_yticks([])
         try:
