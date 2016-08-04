@@ -6,7 +6,9 @@ import toml
 class CameraHandler:
     def __init__(self, ax, config):
         self.ax = ax
-        self.ax.set_axis_off()
+#        self.ax.set_axis_off()
+        self.ax.set_xticks([])
+        self.ax.set_yticks([])
         try:
             self.interval = config["skycam"]["update_interval"]
             img_path = config["skycam"]["image_path"]
@@ -18,7 +20,6 @@ class CameraHandler:
         self.lockfile = path.join(img_path, "lock.txt")
         self.has_image = False
         self.update_image()
-        self.draw_image()
         
     def update_image(self):
         """Load the image from the file."""
@@ -30,13 +31,16 @@ class CameraHandler:
         """Draw the stored image onto the axes."""
         if self.has_image:
             self.ax.imshow(self.image)
+        else:
+            self.ax.set_axis_bgcolor("black")
     
-
-with open("config.toml") as f:
-    conf = toml.loads(f.read())
-    fig = plt.figure(figsize=(20,13))
-    ax = fig.add_subplot(111)
+if __name__=="__main__":
+    with open("config.toml") as f:
+        conf = toml.loads(f.read())
+        fig = plt.figure(figsize=(15,10))
+        fig.patch.set_facecolor("white")
+        ax = fig.add_subplot(111)
     
-    C = CameraHandler(ax, conf)
-    C.draw_image()
-    plt.show()
+        C = CameraHandler(ax, conf)
+        C.draw_image()
+        plt.show()
