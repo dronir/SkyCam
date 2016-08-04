@@ -23,12 +23,16 @@ trace_show_time = true # TODO (not implemented)
 files = ["geodetic.txt", "science.txt"] # TODO (not implemented)
 
 [aircraft]
-address = "localhost" # TODO (not implemented)
-port = 7879 # TODO (not implemented)
+address = "localhost"
+port = 7879
 show_vectors = true # TODO (not implemented)
 color = "purple" # TODO (not implemented)
+min_altitude = 15 # degrees # TODO (not implemented)
+distance = 100 # km # TODO (not implemented)
+warn_zenith = true # TODO (not implemented)
+warn_scope = true # TODO (not implemented)
 warn_nearby = true # TODO (not implemented)
-
+nearby_distance = 20 # km # TODO (not implemented)
 
 [telescope]
 address = "localhost" # TODO (not implemented)
