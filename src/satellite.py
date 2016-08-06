@@ -14,7 +14,7 @@ def get_Hovi():
     return Hovi
 
 class SatelliteHandler:
-    def __init__(self, names, filename, obs=None):
+    def __init__(self, filename, names=[], obs=None):
         """Initialize satellite handler with names.
         
         'names' is a list of the names of the desired satellites, 'filename' gives the
@@ -22,7 +22,7 @@ class SatelliteHandler:
         
         self.names = names
         self.filename = filename
-        if not obs:
+        if obs is None:
             obs = get_Hovi()
         self.observer = obs
         self.update()
@@ -49,7 +49,7 @@ class SatelliteHandler:
         offset is a shift in time. The defaults produce time points from -2 to +14
         minutes from now."""
         
-        if not date:
+        if data is None:
             date = datetime.datetime.now()
         date = date - datetime.timedelta(seconds=date.second)
         loc = []
@@ -64,7 +64,7 @@ class SatelliteHandler:
         
     def loc(self, idx, date=None):
         """Get the position of the ith satellite at a given time."""
-        if not date:
+        if date is None:
             date = datetime.datetime.now()
         self.observer.date = date
         sat = self.satellites[idx]
@@ -78,7 +78,7 @@ class SatelliteHandler:
     
     def list_visible(self, date=None):
         """Return a list with the names and positions of all visible satellites."""
-        if not date:
+        if date is None:
             date = datetime.datetime.now()
         self.observer.date = date
         output = []
@@ -91,7 +91,7 @@ class SatelliteHandler:
         return output
     
 if __name__=="__main__":
-    H = SatelliteHandler([], "geodetic.txt")
+    H = SatelliteHandler("geodetic.txt")
     print(H.list_visible())
 
 
