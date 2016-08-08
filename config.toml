@@ -13,14 +13,14 @@ image_path = "test"
 image_name = "ImageLastFTP_AllSKY.png"
 north_offset = 13.68 # degrees # TODO (not implemented)
 
-[satellites]
+[satellite]
 color = "yellow" # TODO (not implemented)
 show_name = true # TODO (not implemented)
 trace_interval = 1 # minutes # TODO (not implemented)
 trace_forward = 5 # TODO (not implemented)
 trace_backward = 1 # TODO (not implemented)
 trace_show_time = true # TODO (not implemented)
-files = ["geodetic.txt", "science.txt"]
+files = ["geodetic.txt"]
 names = []
 
 [aircraft]
