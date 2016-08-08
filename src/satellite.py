@@ -14,7 +14,7 @@ def get_Hovi():
     return Hovi
 
 class SatelliteHandler:
-    def __init__(self, config, ax, obs=None):
+    def __init__(self, ax, config, obs=None):
         """Initialize satellite handler with names.
         
         'names' is a list of the names of the desired satellites, 'filename' gives the
@@ -30,16 +30,17 @@ class SatelliteHandler:
     def update(self):
         """Loads satellite orbit details from file."""
         output = []
-        with open(self.filename) as f:
-            while True:
-                name = f.readline().strip()
-                if name == "":
-                    break
-                line1 = f.readline().strip()
-                line2 = f.readline().strip()
-                if name in self.names or not self.names:
-                    sat = ephem.readtle(name, line1, line2)
-                    output.append(sat)
+        for filename in self.filenames:
+            with open(filename) as f:
+                while True:
+                    name = f.readline().strip()
+                    if name == "":
+                        break
+                    line1 = f.readline().strip()
+                    line2 = f.readline().strip()
+                    if name in self.names or not self.names:
+                        sat = ephem.readtle(name, line1, line2)
+                        output.append(sat)
         self.satellites = output
         
     def trace(self, idx, date=None, interval=1, N=7, offset=-1):
