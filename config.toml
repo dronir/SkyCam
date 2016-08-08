@@ -20,7 +20,8 @@ trace_interval = 1 # minutes # TODO (not implemented)
 trace_forward = 5 # TODO (not implemented)
 trace_backward = 1 # TODO (not implemented)
 trace_show_time = true # TODO (not implemented)
-files = ["geodetic.txt", "science.txt"] # TODO (not implemented)
+files = ["geodetic.txt", "science.txt"]
+names = []
 
 [aircraft]
 address = "localhost"
@@ -35,8 +36,8 @@ warn_nearby = true # TODO (not implemented)
 nearby_distance = 20 # km # TODO (not implemented)
 
 [telescope]
-address = "localhost" # TODO (not implemented)
-port = 7879 # TODO (not implemented)
+address = "localhost"
+port = 7879
 color_normal = "blue" # TODO (not implemented)
 color_warning = "red" # TODO (not implemented)
 

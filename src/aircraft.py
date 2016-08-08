@@ -132,7 +132,7 @@ class AircraftListener:
     
     def __init__(self, config, handler):
         self.handler = handler
-        self.port = config["aircraft"]["port"]
+        self.port = int(config["aircraft"]["port"])
         self.address = config["aircraft"]["address"]
         self.parser = ET.XMLPullParser(["start", "end"])
         self.connected = False
@@ -152,13 +152,12 @@ class AircraftListener:
             self.parser.feed(data)
             self.handler.handle(self.parser.read_events())
         self.parser.feed("</DATASTREAM>")
-        self.handler.close()
         self.connected = False
         print("AircraftListener: Shutting down.")
 
 if __name__=="__main__":
-    conf = {"aircraft": {"port":7879, "address":"localhost"}}
-    AH = AircraftHandler()
+    conf = {"aircraft": {"port":7879, "address":"localhost", "max_distance":100}}
+    AH = AircraftHandler(None, conf)
     AL = AircraftListener(conf, AH)
     AL.listen()
         

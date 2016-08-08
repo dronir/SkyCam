@@ -14,14 +14,14 @@ def get_Hovi():
     return Hovi
 
 class SatelliteHandler:
-    def __init__(self, filename, names=[], obs=None):
+    def __init__(self, config, ax, obs=None):
         """Initialize satellite handler with names.
         
         'names' is a list of the names of the desired satellites, 'filename' gives the
         file containing the orbit information in Two-Line Element format."""
         
-        self.names = names
-        self.filename = filename
+        self.names = config["satellite"]["names"]
+        self.filenames = config["satellite"]["files"]
         if obs is None:
             obs = get_Hovi()
         self.observer = obs
