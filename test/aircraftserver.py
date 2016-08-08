@@ -1,12 +1,23 @@
 import socket
 from sys import exit
 import time
+from datetime import datetime
 
 # This program starts a server on port 7879, sending the same piece of XML
 # flight date every second. This can be used as a simple test server for
 # aircraft.py
 
-DATA = b"<MODESMESSAGE><DATETIME>20070622141943</DATETIME><MODES>400F2B</MODES><CALLSIGN>OVW84</CALLSIGN><ALTITUDE>12030</ALTITUDE><GROUNDSPEED>451</GROUNDSPEED><TRACK>234</TRACK><VRATE>0</VRATE><AIRSPEED></AIRSPEED><LATITUDE>60.0</LATITUDE><LONGITUDE>25.0</LONGITUDE></MODESMESSAGE>"
+DATA = "<MODESMESSAGE><DATETIME>{}</DATETIME><MODES>400F2B</MODES><CALLSIGN>OVW84</CALLSIGN><ALTITUDE>10000</ALTITUDE><GROUNDSPEED>451</GROUNDSPEED><TRACK>90</TRACK><VRATE>0</VRATE><AIRSPEED></AIRSPEED><LATITUDE>{:.6f}</LATITUDE><LONGITUDE>{:.6f}</LONGITUDE></MODESMESSAGE>"
+
+
+
+def position(T0):
+    dT = time.monotonic() - T0
+    T = (dT % 120) / 120
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    lat = 60.21716
+    lon = 24.39 + T * 0.1
+    return timestamp, lat, lon
 
 def serve():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,10 +30,11 @@ def serve():
             print("Connection from {}".format(address))
         except KeyboardInterrupt:
             exit()
+        T0 = time.monotonic()
         while True:
+            message = bytes(DATA.format(*position(T0)), "utf-8")
             try:
-                print("Sending...")
-                clientsocket.send(DATA)
+                clientsocket.send(message)
             except BrokenPipeError:
                 print("Lost connection")
                 break
