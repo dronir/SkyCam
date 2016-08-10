@@ -2,32 +2,33 @@
 # Olli Wilkman 2016
 
 [main]
-update_interval = 0.1 # seconds
+update_interval = 0.5 # seconds
 show_skycam = true
 show_aircraft = true
-show_satellites = true # TODO (not implemented)
+show_satellites = true
+debug_level = 0 # TODO (not implemented)
 
 [skycam]
-update_interval = 60 # seconds # TODO (not implemented)
+update_interval = 60 # seconds
 image_path = "test"
 image_name = "ImageLastFTP_AllSKY.png"
 north_offset = 14.3 # degrees
 
 [satellite]
-color = "yellow" # TODO (not implemented)
+color = "yellow"
 show_name = true # TODO (not implemented)
 trace_interval = 1 # minutes # TODO (not implemented)
 trace_forward = 5 # TODO (not implemented)
 trace_backward = 1 # TODO (not implemented)
 trace_show_time = true # TODO (not implemented)
-files = ["geodetic.txt"]
+files = ["geodetic.txt", "science.txt", "iss.txt"]
 names = []
 
 [aircraft]
 address = "localhost"
 port = 7879
 show_vectors = true # TODO (not implemented)
-color = "purple" # TODO (not implemented)
+color = "purple"
 min_altitude = 15 # degrees # TODO (not implemented)
 max_distance = 100
 warn_zenith = true # TODO (not implemented)

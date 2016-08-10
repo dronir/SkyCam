@@ -21,9 +21,19 @@ class Animator:
         self.show_satellites = config["main"]["show_satellites"]
         self.Aircraft = Aircraft
         self.Camera = Camera
+        self.Satellites = Sat
+        if self.show_skycam:
+            # How many frames between skycam updates
+            self.skycam_interval = int(config["skycam"]["update_interval"] 
+                                 / config["main"]["update_interval"])
     def __call__(self, i):
         if self.show_aircraft:
             self.Aircraft.draw()
+        if self.show_skycam and (i % self.skycam_interval) == 0:
+            self.Camera.update_image()
+            self.Camera.draw_image()
+        if self.show_satellites:
+            self.Satellites.draw()
     def init(self):
         if self.show_skycam:
             self.Camera.draw_image()
@@ -47,19 +57,23 @@ def create_view(config_filename):
     
     Camera = CameraHandler(ax_skycam, config)
     Satellites = SatelliteHandler(ax_symbols, config)
-    Aircraft = AircraftHandler(ax_symbols, config)
+    if config["main"]["show_aircraft"]:
+        Aircraft = AircraftHandler(ax_symbols, config)
+    else:
+        Aircraft = None
     Scope = TelescopeHandler(ax_symbols, config)
     
     animator = Animator(config, Aircraft, Camera, Satellites, Scope)
     
-    PlaneListener = AircraftListener(config, Aircraft)
-    thread_AircraftListener = threading.Thread(target=PlaneListener.listen)
-    thread_AircraftListener.start()
+    if config["main"]["show_aircraft"]:
+        PlaneListener = AircraftListener(config, Aircraft)
+        thread_AircraftListener = threading.Thread(target=PlaneListener.listen, daemon=True)
+        thread_AircraftListener.start()
     
-    screen_interval = int(config["main"]["update_interval"] * 1000)
+    frame_interval = int(config["main"]["update_interval"] * 1000)
     
     anim = FuncAnimation(fig, animator, init_func=animator.init, 
-                         blit=False, interval=screen_interval)
+                         blit=False, interval=frame_interval)
     plt.show()
     
 

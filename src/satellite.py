@@ -1,6 +1,7 @@
 # coding: utf8 
 import ephem
 import datetime
+from numpy import pi
 
 # The SatelliteHandler maintains a list of satellites and their locations, and draws them
 # on the given Axes object when requested.
@@ -22,6 +23,8 @@ class SatelliteHandler:
         
         self.names = config["satellite"]["names"]
         self.filenames = config["satellite"]["files"]
+        self.color = config["satellite"]["color"]
+        self.ax = ax
         if obs is None:
             obs = get_Hovi()
         self.observer = obs
@@ -29,7 +32,7 @@ class SatelliteHandler:
         
     def update(self):
         """Loads satellite orbit details from file."""
-        output = []
+        output = {}
         for filename in self.filenames:
             with open(filename) as f:
                 while True:
@@ -40,7 +43,9 @@ class SatelliteHandler:
                     line2 = f.readline().strip()
                     if name in self.names or not self.names:
                         sat = ephem.readtle(name, line1, line2)
-                        output.append(sat)
+                        point = self.ax.plot([],[], "o")[0]
+                        point.set_color(self.color)
+                        output[name] = (sat, point)
         self.satellites = output
         
     def trace(self, idx, date=None, interval=1, N=7, offset=-1):
@@ -83,13 +88,24 @@ class SatelliteHandler:
             date = datetime.datetime.now()
         self.observer.date = date
         output = []
-        for sat in self.satellites:
+        for sat, point in self.satellites.values():
             sat.compute(self.observer)
             alt = float(sat.alt)
             az = float(sat.az)
             if alt > 0:
                 output.append((sat.name, alt, az))
         return output
+    
+    def draw(self):
+        self.observer.date = datetime.datetime.now()
+        for sat, point in self.satellites.values():
+            sat.compute(self.observer)
+            alt = float(sat.alt)
+            az = float(sat.az)
+            if alt > 0.0:
+                point.set_data([az], [90 - alt*180/pi])
+            else:
+                point.set_data([], [])
     
 if __name__=="__main__":
     H = SatelliteHandler("geodetic.txt")
