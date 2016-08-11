@@ -15,6 +15,11 @@ from sys import argv, exit
 # Remove bottom toolbar from Matplotlib window
 mpl.rcParams["toolbar"] = "None"
 
+# This makes for prettier debug lines
+def print_debug(DEBUG, level, message):
+    if DEBUG >= level:
+        print(message)
+
 class Animator:
     def __init__(self, config, Aircraft, Camera, Sat, Scope):
         self.show_skycam = config["main"]["show_skycam"]
@@ -45,7 +50,7 @@ def create_view(config_filename):
     def DEBUG(level, message):
         print_debug(config["main"]["debug_level"], level, message)
     
-    DEBUG(0, "Main: Greating graphics window...")
+    DEBUG(1, "Main: Greating graphics window...")
     fig = plt.figure(figsize=(16,9))
     ax_skycam = fig.add_subplot(111)
     ax_symbols = fig.add_subplot(111, polar=True)
@@ -72,7 +77,7 @@ def create_view(config_filename):
     
     end_signal = threading.Event()
     if config["main"]["show_aircraft"]:
-        DEBUG(0, "Main: Creating AircraftListener thread...")
+        DEBUG(1, "Main: Creating AircraftListener thread...")
         PlaneListener = AircraftListener(config, Aircraft, end_signal)
         thread_AircraftListener = threading.Thread(target=PlaneListener.listen)
         thread_AircraftListener.start()
@@ -80,14 +85,14 @@ def create_view(config_filename):
     frame_interval = int(config["main"]["update_interval"] * 1000)
     
     
-    DEBUG(0, "Main: Creating view animator...")
+    DEBUG(1, "Main: Creating view animator...")
     anim = FuncAnimation(fig, animator, init_func=animator.init, 
                          blit=False, interval=frame_interval)
 
-    DEBUG(0, "Main: Starting up view...")
+    DEBUG(1, "Main: Starting up view...")
     plt.show()
-    DEBUG(0, "Main: Closed view.")
-    DEBUG(0, "Main: Telling other threads to shut down...")
+    DEBUG(1, "Main: Closed view.")
+    DEBUG(1, "Main: Telling other threads to shut down...")
     # Set the Event which will tell other threads to end themselves.
     end_signal.set()
     
