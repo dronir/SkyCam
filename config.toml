@@ -6,7 +6,7 @@ update_interval = 0.5 # seconds
 show_skycam = true
 show_aircraft = true
 show_satellites = true
-debug_level = 3
+debug_level = 1
 
 [skycam]
 update_interval = 60 # seconds
@@ -27,19 +27,18 @@ names = []
 [aircraft]
 address = "localhost"
 port = 7879
-show_vectors = true # TODO (not implemented)
+show_vectors = true
 color = "purple"
+color_warning = "red"
 min_altitude = 15 # degrees # TODO (not implemented)
 max_distance = 100
 warn_zenith = true # TODO (not implemented)
 warn_scope = true # TODO (not implemented)
-warn_nearby = true # TODO (not implemented)
-nearby_distance = 20 # km # TODO (not implemented)
+warn_nearby = true
+nearby_distance = 20
 
 [telescope]
 address = "localhost"
 port = 7879
 color_normal = "blue" # TODO (not implemented)
 color_warning = "red" # TODO (not implemented)
-
-

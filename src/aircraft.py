@@ -53,19 +53,19 @@ HOVI_POLE = array([0.0, 0.0, EARTH_RADIUS + 0.08])
 
 
 class Aircraft:
-    def __init__(self, ax, color, data):
+    def __init__(self, ax, config, data):
         self.last_updated = datetime(year=1903, month=12, day=17)
         self.marker = ax.plot([], [], "D")[0]
         self.vector = Line2D([], [])
         self.vector.set_linewidth(2)
-        self.vector.set_color(color)
         self.vector.set_alpha(0.5)
-        self.marker.set_color(color)
+        self.config = config
+        self.color = config["aircraft"]["color"]
+        self.color_warn = config["aircraft"]["color_warning"]
         self.marker.set_alpha(0.5)
         ax.add_line(self.vector)
         self.update(data)
         self.label = ax.text(0.0, 0.0, self.callsign)
-        self.label.set_color(color)
         self.label.set_size("small")
         
     def update(self, data):
@@ -128,12 +128,22 @@ class Aircraft:
     def draw(self):
         """Update the marker for this aircraft."""
         if not self.ok:
-            self.marker.set_color("grey")
+            self.marker.set_color("gray")
             return
+        if (self.config["aircraft"]["warn_nearby"]
+                and self.distance() < self.config["aircraft"]["nearby_distance"]):
+            self.marker.set_color(self.color_warn)
+            self.vector.set_color(self.color_warn)
+            self.label.set_color(self.color_warn)
+        else:
+            self.marker.set_color(self.color)
+            self.vector.set_color(self.color)
+            self.label.set_color(self.color)
         alt, az, valt, vaz = self.sky_position()
         self.marker.set_data([az], [alt/RAD])
-        self.vector.set_xdata([az, vaz])
-        self.vector.set_ydata([alt/RAD, valt/RAD])
+        if self.config["aircraft"]["show_vectors"]:
+            self.vector.set_xdata([az, vaz])
+            self.vector.set_ydata([alt/RAD, valt/RAD])
         self.label.set_position((az, alt/RAD))
     
     def clear(self):
@@ -143,6 +153,7 @@ class Aircraft:
 
 class AircraftHandler:
     def __init__(self, ax, config):
+        self.config = config
         self.DEBUG = config["main"]["debug_level"]
         if self.DEBUG >= 1:
             print("AircraftHandler: Initializing...")
@@ -174,7 +185,7 @@ class AircraftHandler:
                 else:
                     if self.DEBUG >= 2:
                         print("AircraftHandler: Creating aircraft {}.".format(ID))
-                    new_plane = Aircraft(self.ax, self.color, new_data)
+                    new_plane = Aircraft(self.ax, self.config, new_data)
                     if new_plane.distance() <= self.max_distance:
                         self.aircraft_list[ID] = new_plane
 
