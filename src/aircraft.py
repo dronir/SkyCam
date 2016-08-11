@@ -55,6 +55,7 @@ HOVI_POLE = array([0.0, 0.0, EARTH_RADIUS + 0.08])
 class Aircraft:
     def __init__(self, ax, config, data):
         self.last_updated = datetime(year=1903, month=12, day=17)
+        self.ax = ax
         self.marker = ax.plot([], [], "D")[0]
         self.vector = Line2D([], [])
         self.vector.set_linewidth(2)
@@ -65,7 +66,7 @@ class Aircraft:
         self.marker.set_alpha(0.5)
         ax.add_line(self.vector)
         self.update(data)
-        self.label = ax.text(0.0, 0.0, self.callsign)
+        self.label = ax.text(0.0, 1000.0, self.callsign)
         self.label.set_size("small")
         
     def update(self, data):
@@ -90,6 +91,7 @@ class Aircraft:
             self.alt = float(data["ALTITUDE"]) * 0.0003048 # feet to km
         except KeyError:
             self.ok = False
+        self.alt, self.az, self.valt, self.vaz = self.sky_position()
             
     def distance(self):
         """Return ground distance from Metsähovi in km."""
@@ -139,7 +141,7 @@ class Aircraft:
             self.marker.set_color(self.color)
             self.vector.set_color(self.color)
             self.label.set_color(self.color)
-        alt, az, valt, vaz = self.sky_position()
+        alt, az, valt, vaz = self.alt, self.az, self.valt, self.vaz
         self.marker.set_data([az], [alt/RAD])
         if self.config["aircraft"]["show_vectors"]:
             self.vector.set_xdata([az, vaz])
@@ -148,6 +150,9 @@ class Aircraft:
     
     def clear(self):
         """Clear the marker for this aircraft"""
+        self.marker.remove()
+        self.vector.remove()
+        self.label.remove()
     
 
 
@@ -159,6 +164,7 @@ class AircraftHandler:
             print("AircraftHandler: Initializing...")
         self.ax = ax
         self.max_distance = config["aircraft"]["max_distance"]
+        self.max_zenith = pi/2 - config["aircraft"]["min_altitude"] * RAD
         self.color = config["aircraft"]["color"]
         self.aircraft_list = {}
         
@@ -178,16 +184,17 @@ class AircraftHandler:
                 if ID in self.aircraft_list:
                     ac = self.aircraft_list[ID]
                     ac.update(new_data)
-                    if ac.distance() > self.max_distance:
+                    if ac.distance() > self.max_distance or ac.alt > self.max_zenith:
                         if self.DEBUG >= 2:
                             print("AircraftHandler: Deleting aircraft {}.".format(ID))
+                        ac.clear()
                         self.aircraft_list.pop(ID, None)
                 else:
-                    if self.DEBUG >= 2:
-                        print("AircraftHandler: Creating aircraft {}.".format(ID))
-                    new_plane = Aircraft(self.ax, self.config, new_data)
-                    if new_plane.distance() <= self.max_distance:
-                        self.aircraft_list[ID] = new_plane
+                    ac = Aircraft(self.ax, self.config, new_data)
+                    if ac.distance() <= self.max_distance and ac.alt < self.max_zenith:
+                        if self.DEBUG >= 2:
+                            print("AircraftHandler: Creating aircraft {}.".format(ID))
+                        self.aircraft_list[ID] = ac
 
     def draw(self):
         if self.DEBUG >= 3:
