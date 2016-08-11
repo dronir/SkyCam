@@ -6,7 +6,7 @@ update_interval = 0.5 # seconds
 show_skycam = true
 show_aircraft = true
 show_satellites = true
-debug_level = 3 # TODO (not implemented)
+debug_level = 3
 
 [skycam]
 update_interval = 60 # seconds
@@ -21,7 +21,7 @@ trace_interval = 1 # minutes # TODO (not implemented)
 trace_forward = 5 # TODO (not implemented)
 trace_backward = 1 # TODO (not implemented)
 trace_show_time = true # TODO (not implemented)
-files = ["geodetic.txt", "science.txt", "iss.txt"]
+files = ["geodetic.txt", "iss.txt"]
 names = []
 
 [aircraft]
