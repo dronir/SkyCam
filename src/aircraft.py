@@ -191,12 +191,13 @@ class AircraftListener:
     parse the XML into a series of element start/end events, and send those to the
     given handler object."""
     
-    def __init__(self, config, handler):
+    def __init__(self, config, handler, end_signal):
         self.DEBUG = config["main"]["debug_level"]
         self.handler = handler
         self.port = int(config["aircraft"]["port"])
         self.address = config["aircraft"]["address"]
         self.parser = ET.XMLPullParser(["start", "end"])
+        self.end_signal = end_signal
         self.connected = False
 
     def listen(self):
@@ -211,6 +212,13 @@ class AircraftListener:
         self.connected = True
         self.parser.feed("<DATASTREAM>")
         while(1):
+            # Get data and pass it to the AircraftHandler until the shutdown signal is
+            # received or the data stream ends for some reason.
+            if self.end_signal.is_set():
+                if self.DEBUG >= 1:
+                    print("AircraftListener: Received shutdown signal.")
+                source.close()
+                break
             data = source.recv(1024)
             if not data:
                 print("AircraftListener: Error: end of stream received.")

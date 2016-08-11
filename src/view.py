@@ -70,10 +70,11 @@ def create_view(config_filename):
     
     animator = Animator(config, Aircraft, Camera, Satellites, Scope)
     
+    end_signal = threading.Event()
     if config["main"]["show_aircraft"]:
         DEBUG(0, "Main: Creating AircraftListener thread...")
-        PlaneListener = AircraftListener(config, Aircraft)
-        thread_AircraftListener = threading.Thread(target=PlaneListener.listen, daemon=True)
+        PlaneListener = AircraftListener(config, Aircraft, end_signal)
+        thread_AircraftListener = threading.Thread(target=PlaneListener.listen)
         thread_AircraftListener.start()
     
     frame_interval = int(config["main"]["update_interval"] * 1000)
@@ -85,7 +86,10 @@ def create_view(config_filename):
 
     DEBUG(0, "Main: Starting up view...")
     plt.show()
-    DEBUG(0, "Main: Ending...")
+    DEBUG(0, "Main: Closed view.")
+    DEBUG(0, "Main: Telling other threads to shut down...")
+    # Set the Event which will tell other threads to end themselves.
+    end_signal.set()
     
 
 
