@@ -21,6 +21,9 @@ class SatelliteHandler:
         'names' is a list of the names of the desired satellites, 'filename' gives the
         file containing the orbit information in Two-Line Element format."""
         
+        self.DEBUG = config["main"]["debug_level"]
+        if self.DEBUG >= 1:
+            print("SatelliteHandler: Initializing.")
         self.names = config["satellite"]["names"]
         self.filenames = config["satellite"]["files"]
         self.color = config["satellite"]["color"]
@@ -32,6 +35,10 @@ class SatelliteHandler:
         
     def update(self):
         """Loads satellite orbit details from file."""
+        if self.DEBUG >= 1:
+            print("SatelliteHandler: Updating satellite list from files: {}".format(
+              ", ".join(self.filenames)
+            ))
         output = {}
         for filename in self.filenames:
             with open(filename) as f:
@@ -47,6 +54,9 @@ class SatelliteHandler:
                         point.set_color(self.color)
                         output[name] = (sat, point)
         self.satellites = output
+        if self.DEBUG >= 2:
+            sats = ", ".join(sorted(self.satellites.keys()))
+            print("SatelliteHandler: following these satellites: {}".format(sats))
         
     def trace(self, idx, date=None, interval=1, N=7, offset=-1):
         """Returns the sky path of the ith satellite in the handler.
@@ -97,6 +107,8 @@ class SatelliteHandler:
         return output
     
     def draw(self):
+        if self.DEBUG >= 3:
+            print("SatelliteHandler: Drawing satellites.")
         self.observer.date = datetime.datetime.now()
         for sat, point in self.satellites.values():
             sat.compute(self.observer)
