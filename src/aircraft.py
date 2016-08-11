@@ -143,12 +143,17 @@ class Aircraft:
 
 class AircraftHandler:
     def __init__(self, ax, config):
+        self.DEBUG = config["main"]["debug_level"]
+        if self.DEBUG >= 1:
+            print("AircraftHandler: Initializing...")
         self.ax = ax
         self.max_distance = config["aircraft"]["max_distance"]
         self.color = config["aircraft"]["color"]
         self.aircraft_list = {}
         
     def update(self, events):
+        if self.DEBUG >= 3:
+            print("AircraftHandler: Received data update.")
         for event_type, element in events:
             if event_type == "start":
                 if element.tag == "MODESMESSAGE":
@@ -163,13 +168,19 @@ class AircraftHandler:
                     ac = self.aircraft_list[ID]
                     ac.update(new_data)
                     if ac.distance() > self.max_distance:
+                        if self.DEBUG >= 2:
+                            print("AircraftHandler: Deleting airfract {}.".format(ID))
                         self.aircraft_list.pop(ID, None)
                 else:
+                    if self.DEBUG >= 2:
+                        print("AircraftHandler: Creating aircraft {}.".format(ID))
                     new_plane = Aircraft(self.ax, self.color, new_data)
                     if new_plane.distance() <= self.max_distance:
                         self.aircraft_list[ID] = new_plane
 
     def draw(self):
+        if self.DEBUG >= 3:
+            print("AircraftHandler: Drawing aircraft.")
         for ID in self.aircraft_list:
             aircraft = self.aircraft_list[ID]
             aircraft.draw()
@@ -181,6 +192,7 @@ class AircraftListener:
     given handler object."""
     
     def __init__(self, config, handler):
+        self.DEBUG = config["main"]["debug_level"]
         self.handler = handler
         self.port = int(config["aircraft"]["port"])
         self.address = config["aircraft"]["address"]
@@ -188,22 +200,28 @@ class AircraftListener:
         self.connected = False
 
     def listen(self):
+        if self.DEBUG >= 1:
+            print("AircraftListener: Initializing...")
         source = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        source.connect((self.address, self.port))
-        print("Start aircraft data listener.")
+        try:
+            source.connect((self.address, self.port))
+        except:
+            print("AircraftListener: Error, unable to connect to socket.")
+            return
         self.connected = True
         self.parser.feed("<DATASTREAM>")
         while(1):
             data = source.recv(1024)
             if not data:
-                print("AircraftListener: End of stream received.")
+                print("AircraftListener: Error: end of stream received.")
                 source.close()
                 break
             self.parser.feed(data)
             self.handler.update(self.parser.read_events())
         self.parser.feed("</DATASTREAM>")
         self.connected = False
-        print("AircraftListener: Shutting down.")
+        if self.DEBUG >= 1:
+            print("AircraftListener: Shutting down.")
 
 if __name__=="__main__":
     conf = {"aircraft": {"port":7879, "address":"localhost", "max_distance":100}}

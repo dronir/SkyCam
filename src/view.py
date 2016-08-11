@@ -2,6 +2,7 @@ from satellite import SatelliteHandler
 from scope import TelescopeHandler
 from camera import CameraHandler
 from aircraft import AircraftHandler, AircraftListener
+from debug import print_debug
 
 from numpy import pi
 import matplotlib as mpl
@@ -41,6 +42,10 @@ class Animator:
 def create_view(config_filename):
     config = toml.loads(open(config_filename).read())
     
+    def DEBUG(level, message):
+        print_debug(config["main"]["debug_level"], level, message)
+    
+    DEBUG(0, "Main: Greating graphics window...")
     fig = plt.figure(figsize=(16,9))
     ax_skycam = fig.add_subplot(111)
     ax_symbols = fig.add_subplot(111, polar=True)
@@ -66,15 +71,21 @@ def create_view(config_filename):
     animator = Animator(config, Aircraft, Camera, Satellites, Scope)
     
     if config["main"]["show_aircraft"]:
+        DEBUG(0, "Main: Creating AircraftListener thread...")
         PlaneListener = AircraftListener(config, Aircraft)
         thread_AircraftListener = threading.Thread(target=PlaneListener.listen, daemon=True)
         thread_AircraftListener.start()
     
     frame_interval = int(config["main"]["update_interval"] * 1000)
     
+    
+    DEBUG(0, "Main: Creating view animator...")
     anim = FuncAnimation(fig, animator, init_func=animator.init, 
                          blit=False, interval=frame_interval)
+
+    DEBUG(0, "Main: Starting up view...")
     plt.show()
+    DEBUG(0, "Main: Ending...")
     
 
 
