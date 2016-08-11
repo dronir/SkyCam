@@ -169,7 +169,7 @@ class AircraftHandler:
                     ac.update(new_data)
                     if ac.distance() > self.max_distance:
                         if self.DEBUG >= 2:
-                            print("AircraftHandler: Deleting airfract {}.".format(ID))
+                            print("AircraftHandler: Deleting aircraft {}.".format(ID))
                         self.aircraft_list.pop(ID, None)
                 else:
                     if self.DEBUG >= 2:
