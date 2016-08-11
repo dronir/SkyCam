@@ -2,7 +2,6 @@ from satellite import SatelliteHandler
 from scope import TelescopeHandler
 from camera import CameraHandler
 from aircraft import AircraftHandler, AircraftListener
-from debug import print_debug
 
 from numpy import pi
 import matplotlib as mpl
