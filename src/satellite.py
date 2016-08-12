@@ -25,7 +25,7 @@ class SatelliteHandler:
         self.trace_forward = config["satellite"]["trace_forward"]
         self.trace_backward = config["satellite"]["trace_backward"]
         self.trace_show_time = config["satellite"]["trace_show_time"]
-        self.min_altitude = config["satellite"]["min_altitude"]
+        self.min_altitude = config["satellite"]["min_altitude"] * pi/180
         self.ax = ax
         if obs is None:
             obs = Hovi
@@ -49,11 +49,11 @@ class SatelliteHandler:
                     line2 = f.readline().strip()
                     if name in self.names or not self.names:
                         sat = ephem.readtle(name, line1, line2)
-                        point = self.ax.plot([],[], "*")[0]
-                        trace = self.ax.plot([],[], ":")[0]
+                        point = self.ax.plot([],[], "o")[0]
+                        trace = self.ax.plot([],[], "-")[0]
                         label = self.ax.text(0.0, 1000.0, "  " + name)
                         point.set_color(self.color)
-                        point.set_markersize(10)
+                        point.set_markersize(8)
                         label.set_color(self.color)
                         label.set_fontsize("x-small")
                         trace.set_color(self.color)
@@ -72,7 +72,7 @@ class SatelliteHandler:
             sat.compute(self.observer)
             alt = float(sat.alt)
             az = float(sat.az)
-            if alt > self.min_altitude*pi/180:
+            if alt > self.min_altitude:
                 point.set_data([az], [90 - alt*180/pi])
                 if self.show_label:
                     label.set_position([az, 90 - alt*180/pi])
@@ -90,12 +90,25 @@ class SatelliteHandler:
         for sat, point, label, trace in self.satellites.values():
             X = []
             Y = []
-            for time in times:
+            hidden = False
+            for i, time in enumerate(times):
                 self.observer.date = time
                 sat.compute(self.observer)
                 alt = float(sat.alt)
                 az = float(sat.az)
-                X.append(az)
-                Y.append(90 - alt*180/pi)
+                if alt > self.min_altitude:
+                    X.append(az)
+                    Y.append(90 - alt*180/pi)
+                # Draw the label next to the trace if the satellite is below horizon
+                if i == -a-1 and alt < self.min_altitude:
+                    hidden = True
+                if (hidden and self.show_label and alt > self.min_altitude):
+                    label.set_position([az, 90 - alt*180/pi])
+                if i > -a-1 and alt > self.min_altitude:
+                    hidden = False
+                if hidden and i == len(times) - 1:
+                    X = []
+                    Y = []
+                    label.set_position([0.0, 1000.0])
             trace.set_data(X,Y)
                 
