@@ -14,31 +14,29 @@ from sys import argv, exit
 # Remove bottom toolbar from Matplotlib window
 mpl.rcParams["toolbar"] = "None"
 
-# This makes for prettier debug lines
-def print_debug(DEBUG, level, message):
-    if DEBUG >= level:
-        print(message)
-
 class Animator:
     def __init__(self, config, Aircraft, Camera, Sat, Scope):
         self.show_skycam = config["main"]["show_skycam"]
         self.show_aircraft = config["main"]["show_aircraft"]
         self.show_satellites = config["main"]["show_satellites"]
+        self.show_satellite_traces = config["satellite"]["show_traces"]
         self.Aircraft = Aircraft
         self.Camera = Camera
         self.Satellites = Sat
-        if self.show_skycam:
-            # How many frames between skycam updates
-            self.skycam_interval = int(config["skycam"]["update_interval"] 
-                                 / config["main"]["update_interval"])
+        interval = config["main"]["update_interval"]
+        self.trace_interval = int(config["satellite"]["trace_interval"] / interval)
+        self.skycam_interval = int(config["skycam"]["update_interval"] / interval)
     def __call__(self, i):
         if self.show_aircraft:
             self.Aircraft.draw()
-        if self.show_skycam and (i % self.skycam_interval) == 0:
+        if self.show_skycam and (i % self.skycam_interval == 0):
             self.Camera.update_image()
             self.Camera.draw_image()
         if self.show_satellites:
             self.Satellites.draw()
+        if self.show_satellite_traces and (i % self.trace_interval == 0):
+            self.Satellites.draw_traces()
+            
     def init(self):
         if self.show_skycam:
             self.Camera.draw_image()
@@ -46,8 +44,10 @@ class Animator:
 def main(config_filename):
     config = toml.loads(open(config_filename).read())
     
+    # Prettier debug lines with this closure
     def DEBUG(level, message):
-        print_debug(config["main"]["debug_level"], level, message)
+        if config["main"]["debug_level"] >= level:
+            print(message)
     
     DEBUG(1, "Main: Greating graphics window...")
     fig = plt.figure(figsize=(16, 9))

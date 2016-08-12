@@ -6,23 +6,25 @@ update_interval = 0.5 # seconds
 show_skycam = true
 show_aircraft = true
 show_satellites = true
-debug_level = 1
+debug_level = 0
 
 [skycam]
 update_interval = 60 # seconds
 image_path = "test"
 image_name = "ImageLastFTP_AllSKY.png"
-north_offset = 14.3 # degrees
+north_offset = 13.9 # degrees
 
 [satellite]
 color = "yellow"
-show_name = true
-trace_interval = 1 # minutes # TODO (not implemented)
-trace_forward = 5 # TODO (not implemented)
-trace_backward = 1 # TODO (not implemented)
+show_names = true
+show_traces = true
+trace_interval = 10 # seconds
+trace_forward = 20
+trace_backward = 2
 trace_show_time = true # TODO (not implemented)
 files = ["geodetic.txt", "iss.txt", "science.txt"]
 names = []
+min_altitude = 10.0 # degrees
 
 [aircraft]
 address = "localhost"
