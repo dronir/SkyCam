@@ -67,7 +67,7 @@ class SatelliteHandler:
         """Draw the satellites onto the Axes."""
         if self.DEBUG >= 3:
             print("SatelliteHandler: Drawing satellites.")
-        self.observer.date = datetime.datetime.now()
+        self.observer.date = datetime.datetime.utcnow()
         for sat, point, label, trace in self.satellites.values():
             sat.compute(self.observer)
             alt = float(sat.alt)
@@ -82,7 +82,7 @@ class SatelliteHandler:
     def draw_traces(self):
         if self.DEBUG >= 3:
             print("SatelliteHandler: Drawing satellite traces.")
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         a = -self.trace_backward
         b = self.trace_forward + 1
         dt = self.trace_interval
