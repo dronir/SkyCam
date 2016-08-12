@@ -61,6 +61,9 @@ def main(config_filename):
     ax_symbols.set_position((-0.023, -0.01, 0.75, 1.0))
     ax_texts.set_position((0.75, 0.02, 0.2, 0.96))
 
+    # Set up the Axes object for the skycam
+    ax_skycam.patch.set_color("black")
+
     # Set up the Axes object for planes, satellites and scope
     north_offset = config["skycam"]["north_offset"] * pi/180
     ax_symbols.patch.set_alpha(0)
@@ -68,6 +71,11 @@ def main(config_filename):
     ax_symbols.set_theta_offset(north_offset)
     ax_symbols.tick_params(axis='x', colors='white')
     ax_symbols.tick_params(axis='y', colors='white')
+    ax_symbols.set_xticklabels(['N','NE','E','SE','S','SW','W','NW'])
+    if not config["main"]["show_skycam"]:
+        ax_symbols.xaxis.grid(color="white")
+        ax_symbols.yaxis.grid(color="white")
+        [l.set_color("white") for l in ax_symbols.spines.values()]
     
     # Set up the Axes for texts
     ax_texts.patch.set_color("black")
