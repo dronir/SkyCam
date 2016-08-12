@@ -52,5 +52,16 @@ strings that can optionally be empty. Only those satellites are drawn whose name
 appears in the orbit files, is found in this list. If the list is empty, all satellites
 in the given orbit files are drawn.
 
+### Aircraft
+
+The aircraft information is retrieved in real-time through a socket connection. The
+address and port to connect to are given in the config. The system can provide warnings
+when aircraft are either close to the zenith, near Metsähovi, or too close to the
+telescope pointing direction. They are not drawn if they are lower than `min_altitude` or
+farther away than `max_distance`.
+
+### Scope
+
+(Not yet implemented.)
 
 
