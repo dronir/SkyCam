@@ -43,27 +43,38 @@ class Animator:
         if self.show_skycam:
             self.Camera.draw_image()
 
-def create_view(config_filename):
+def main(config_filename):
     config = toml.loads(open(config_filename).read())
     
     def DEBUG(level, message):
         print_debug(config["main"]["debug_level"], level, message)
     
     DEBUG(1, "Main: Greating graphics window...")
-    fig = plt.figure(figsize=(16,9))
-    ax_skycam = fig.add_subplot(111)
-    ax_symbols = fig.add_subplot(111, polar=True)
-    ax_skycam.set_position((0.0, 0.0, 0.75, 1.0))
+    fig = plt.figure(figsize=(16, 9))
+    fig.patch.set_color("black")
+    
+    # Create the different Axes for skycam image, aircraft/sat/scope symbols and texts
+    ax_skycam = fig.add_subplot(311)
+    ax_symbols = fig.add_subplot(312, polar=True)
+    ax_texts = fig.add_subplot(313)
+    ax_skycam.set_position((0.01, 0.02, 0.73, 0.96))
     ax_symbols.set_position((-0.023, -0.01, 0.75, 1.0))
+    ax_texts.set_position((0.75, 0.02, 0.2, 0.96))
 
-    # Set up the axes object for drawing planes, satellites and scope
+    # Set up the Axes object for planes, satellites and scope
     north_offset = config["skycam"]["north_offset"] * pi/180
     ax_symbols.patch.set_alpha(0)
     ax_symbols.set_ylim(0, 90)
     ax_symbols.set_theta_offset(north_offset)
-    #ax_symbols.tick_params(axis='x', colors='white')
-    #ax_symbols.tick_params(axis='y', colors='white')
+    ax_symbols.tick_params(axis='x', colors='white')
+    ax_symbols.tick_params(axis='y', colors='white')
     
+    # Set up the Axes for texts
+    ax_texts.patch.set_color("black")
+    ax_texts.set_xticks([])
+    ax_texts.set_yticks([])
+    
+    # Set up the handler objects for the different drawings
     Camera = CameraHandler(ax_skycam, config)
     Satellites = SatelliteHandler(ax_symbols, config)
     if config["main"]["show_aircraft"]:
@@ -74,6 +85,7 @@ def create_view(config_filename):
     
     animator = Animator(config, Aircraft, Camera, Satellites, Scope)
     
+    # Create the thread that listens for aircraft updates
     end_signal = threading.Event()
     if config["main"]["show_aircraft"]:
         DEBUG(1, "Main: Creating AircraftListener thread...")
@@ -83,7 +95,6 @@ def create_view(config_filename):
     
     frame_interval = int(config["main"]["update_interval"] * 1000)
     
-    
     DEBUG(1, "Main: Creating view animator...")
     anim = FuncAnimation(fig, animator, init_func=animator.init, 
                          blit=False, interval=frame_interval)
@@ -92,14 +103,13 @@ def create_view(config_filename):
     plt.show()
     DEBUG(1, "Main: Closed view.")
     DEBUG(1, "Main: Telling other threads to shut down...")
-    # Set the Event which will tell other threads to end themselves.
     end_signal.set()
     
 
 
 if __name__=="__main__":
     try:
-        create_view(argv[1])
+        main(argv[1])
     except KeyboardInterrupt:
         exit()
 
