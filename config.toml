@@ -16,12 +16,12 @@ north_offset = 14.3 # degrees
 
 [satellite]
 color = "yellow"
-show_name = true # TODO (not implemented)
+show_name = true
 trace_interval = 1 # minutes # TODO (not implemented)
 trace_forward = 5 # TODO (not implemented)
 trace_backward = 1 # TODO (not implemented)
 trace_show_time = true # TODO (not implemented)
-files = ["geodetic.txt", "iss.txt"]
+files = ["geodetic.txt", "iss.txt", "science.txt"]
 names = []
 
 [aircraft]
@@ -34,7 +34,7 @@ min_altitude = 15 # degrees
 max_distance = 100
 warn_zenith = true # TODO (not implemented)
 warn_scope = true # TODO (not implemented)
-warn_nearby = true
+warn_nearby = false
 nearby_distance = 20
 
 [telescope]
