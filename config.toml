@@ -13,6 +13,7 @@ debug_level = 1
 update_interval = 60 # seconds
 image_path = "test"
 image_name = "ImageLastFTP_AllSKY.png"
+default_image = "image_blank.png" # TODO (not implemented)
 north_offset = 13.9 # degrees
 
 [satellite]
@@ -25,7 +26,7 @@ trace_backward = 2
 trace_show_time = true # TODO (not implemented)
 files = ["geodetic.txt", "iss.txt", "science.txt"]
 names = []
-min_altitude = 10.0 # degrees
+min_altitude = 0.0 # degrees
 
 [aircraft]
 address = "localhost"
@@ -34,11 +35,11 @@ show_vectors = true
 color = "purple"
 color_warning = "red"
 min_altitude = 15 # degrees
-max_distance = 100
+max_distance = 100 # km
 warn_zenith = true # TODO (not implemented)
 warn_scope = true # TODO (not implemented)
 warn_nearby = false
-nearby_distance = 20
+nearby_distance = 20 # km
 
 [telescope]
 address = "localhost"
