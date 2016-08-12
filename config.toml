@@ -7,7 +7,7 @@ show_skycam = true
 show_aircraft = true
 show_satellites = true
 show_scope = true # TODO (not implemented)
-debug_level = 0
+debug_level = 1
 
 [skycam]
 update_interval = 60 # seconds

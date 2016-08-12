@@ -6,19 +6,16 @@ from numpy import pi
 # The SatelliteHandler maintains a list of satellites and their locations, and draws them
 # on the given Axes object when requested.
 
-
 Hovi = ephem.Observer()
 Hovi.lat = 60.217165
 Hovi.lon = 24.394562
 Hovi.elevation = 80
 
-
-
 class SatelliteHandler:
     def __init__(self, ax, config, obs=None):
         self.DEBUG = config["main"]["debug_level"]
         if self.DEBUG >= 1:
-            print("SatelliteHandler: Initializing.")
+            print("SatelliteHandler: Initializing...")
         self.names = config["satellite"]["names"]
         self.filenames = config["satellite"]["files"]
         self.color = config["satellite"]["color"]
@@ -37,7 +34,7 @@ class SatelliteHandler:
         
     def update(self):
         """Loads satellite orbit details from file."""
-        if self.DEBUG >= 1:
+        if self.DEBUG >= 2:
             print("SatelliteHandler: Updating satellite list from files: {}".format(
               ", ".join(self.filenames)
             ))
