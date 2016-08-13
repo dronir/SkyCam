@@ -17,8 +17,10 @@ class CameraHandler:
         self.interval = config["skycam"]["update_interval"]
         img_path = config["skycam"]["image_path"]
         img_name = config["skycam"]["image_name"]
+        img_backup = config["skycam"]["default_image"]
         self.filename = path.join(img_path, img_name)
         self.lockfile = path.join(img_path, "lock.txt")
+        self.backup = path.join(img_path, img_backup)
         self.has_image = False
         self.update_image()
         
@@ -29,9 +31,15 @@ class CameraHandler:
         if path.exists(self.filename) and not path.exists(self.lockfile):
             self.image = plt.imread(self.filename)
             self.has_image = True
+        elif path.exists(self.backup):
+            if self.DEBUG >= 1:
+                print("CameraHandler: Unable to load image. Loading backup image.")
+            self.image = plt.imread(self.backup)
+            self.has_image = True
         else:
-            if self.DEBUG >= 2:
-                print("CameraHandler: Unable to load image.")
+            if self.DEBUG >= 1:
+                print("CameraHandler: Unable to load backup image.")
+            self.has_image = False
     
     def draw_image(self):
         """Draw the stored image onto the axes."""
