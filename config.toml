@@ -26,9 +26,9 @@ trace_backward = 2
 trace_show_time = true # TODO (not implemented)
 files = ["geodetic.txt", "iss.txt", "science.txt"]
 names = []
-min_altitude = 0.0 # degrees
-max_range = 1000.0 # km # TODO (not implemented)
-show_eclipsed = true # TODO (not implemented)
+min_altitude = 5.0 # degrees
+max_range = 37000.0
+show_eclipsed = true
 
 [aircraft]
 address = "localhost"
