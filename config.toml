@@ -13,7 +13,7 @@ debug_level = 1
 update_interval = 60 # seconds
 image_path = "test"
 image_name = "ImageLastFTP_AllSKY.png"
-default_image = "image_blank.png" # TODO (not implemented)
+default_image = "image_blank.png"
 north_offset = 13.9 # degrees
 
 [satellite]
@@ -27,6 +27,8 @@ trace_show_time = true # TODO (not implemented)
 files = ["geodetic.txt", "iss.txt", "science.txt"]
 names = []
 min_altitude = 0.0 # degrees
+max_range = 1000.0 # km # TODO (not implemented)
+show_eclipsed = true # TODO (not implemented)
 
 [aircraft]
 address = "localhost"
