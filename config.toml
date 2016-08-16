@@ -21,13 +21,13 @@ color = "yellow"
 show_names = true
 show_traces = true
 trace_interval = 10 # seconds
-trace_forward = 20
-trace_backward = 2
+trace_forward = 20 # steps
+trace_backward = 2 # steps
 trace_show_time = true # TODO (not implemented)
 files = ["geodetic.txt", "iss.txt", "science.txt"]
 names = []
 min_altitude = 5.0 # degrees
-max_range = 37000.0
+max_range = 370000.0
 show_eclipsed = true
 
 [aircraft]
