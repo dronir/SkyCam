@@ -23,15 +23,9 @@ interval of the skycam image nor the satellite traces (see below).
 
 The `show_aircraft` etc. options determine which layers are drawn in the image.
 
-The `debug_level` option sets the amount of messages that are printed while the software
-is running. The highest level can produce a lot of output and can slow down the drawing
-loop in the view, especially if there are several aircraft in the sky.
-
-0. No messages are printed.
-1. Initialization and finalization messages.
-2. Above, plus temporary object creation and deletion messages and other less important 
-   information.
-3. Above, plus real-time debug messages. This can mean several lines per second.
+The `debug_level` option, between 0 and 3, sets the amount of messages that are printed
+while the software is running. The highest level can produce a lot of output and can slow
+down the drawing loop in the view, especially if there are several aircraft in the sky.
 
 ### Sky camera
 
