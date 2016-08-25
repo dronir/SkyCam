@@ -6,7 +6,9 @@ from aircraft import AircraftHandler, AircraftListener
 from numpy import pi
 import matplotlib as mpl
 from matplotlib.animation import FuncAnimation
+from matplotlib.patches import Circle
 from matplotlib import pyplot as plt
+
 import toml
 import threading
 from sys import argv, exit
@@ -76,6 +78,12 @@ def main(config_filename):
         ax_symbols.xaxis.grid(color="white")
         ax_symbols.yaxis.grid(color="white")
         [l.set_color("white") for l in ax_symbols.spines.values()]
+    
+    horizon_ring = config["skycam"]["draw_horizon"]
+    if horizon_ring > 0.0:
+        ax_symbols.add_artist(
+            Circle((0,0), 90 - horizon_ring, transform=ax_symbols.transData._b,
+                  color="white", fill=False))
     
     # Set up the Axes for texts
     ax_texts.patch.set_color("black")
