@@ -5,9 +5,10 @@
 
 To run this software, run `python src/view.py config.toml` using Python 3.
 
-This requires Matplotlib, NumPy, SciPy, PyEphem and the `toml` package. All of these are
-in PyPI so to install them, `pip install matplotlib scipy pyephem toml` should be enough.
-Using a `virtualenv` with Python 3 and the required packages might be a good idea.
+This requires Matplotlib, NumPy, SciPy, Pillow, PyEphem and the `toml` package. All of
+these are in PyPI so to install them, `pip install matplotlib scipy pyephem toml` should
+be enough. Using a `virtualenv` with Python 3 and the required packages might be a good
+idea.
 
 
 ## Configuration

@@ -12,17 +12,17 @@ debug_level = 1
 [skycam]
 update_interval = 60 # seconds
 image_path = "test"
-image_name = "ImageLastFTP_AllSKY.png"
+image_name = "ImageLastFTP_AllSKY.jpg"
 default_image = "image_blank.png"
-north_offset = 13.9 # degrees
+north_offset = -61 # degrees
 draw_horizon = 5 # degrees
 
 [satellite]
 color = "yellow"
 show_names = true
 show_traces = true
-trace_interval = 10 # seconds
-trace_forward = 20 # steps
+trace_interval = 20 # seconds
+trace_forward = 6 # steps
 trace_backward = 2 # steps
 trace_show_time = true # TODO (not implemented)
 files = ["geodetic.txt"]
