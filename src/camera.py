@@ -46,7 +46,7 @@ class CameraHandler:
         if self.DEBUG >= 2:
             print("CameraHandler: Drawing image on screen.")
         if self.has_image:
-            self.ax.imshow(self.image)
+            self.ax.imshow(self.image, interpolation="nearest")
         else:
             if self.DEBUG >= 2:
                 print("CameraHandler: No image, drawing black background.")
