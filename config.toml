@@ -3,6 +3,7 @@
 
 [main]
 update_interval = 0.5 # seconds
+window_width = 16 # inches
 show_skycam = true
 show_aircraft = true
 show_satellites = true
@@ -14,7 +15,7 @@ update_interval = 60 # seconds
 image_path = "test"
 image_name = "ImageLastFTP_AllSKY.jpg"
 default_image = "image_blank.png"
-north_offset = -61 # degrees
+north_offset = -60 # degrees
 draw_horizon = 5 # degrees
 
 [satellite]
@@ -25,7 +26,7 @@ trace_interval = 20 # seconds
 trace_forward = 6 # steps
 trace_backward = 2 # steps
 trace_show_time = true # TODO (not implemented)
-files = ["geodetic.txt"]
+files = ["geodetic.txt", "iss.txt", "science.txt"]
 names = []
 min_altitude = 5.0 # degrees
 max_range = 370000.0

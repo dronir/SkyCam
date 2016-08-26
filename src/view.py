@@ -52,7 +52,8 @@ def main(config_filename):
             print(message)
     
     DEBUG(1, "Main: Greating graphics window...")
-    fig = plt.figure(figsize=(16, 9))
+    width = config["main"]["window_width"]
+    fig = plt.figure(figsize=(width, 9/16*width))
     fig.patch.set_color("black")
     
     # Create the different Axes for skycam image, aircraft/sat/scope symbols and texts
@@ -60,15 +61,21 @@ def main(config_filename):
     ax_symbols = fig.add_subplot(312, polar=True)
     ax_texts = fig.add_subplot(313)
     ax_skycam.set_position((0.01, 0.02, 0.73, 0.96))
-    ax_symbols.set_position((-0.023, -0.01, 0.75, 1.0))
+    
+    wx,wy = 1.0, 1.01
+    cx = 0.347
+    cy = 0.487
+    x, y = cx - wx/2, cy - wy/2
+    ax_symbols.set_position((x, y, wx, wy))
     ax_texts.set_position((0.75, 0.02, 0.2, 0.96))
 
     # Set up the Axes object for the skycam
     ax_skycam.patch.set_color("black")
+    ax_symbols.set_axis_bgcolor("red")
+    ax_symbols.patch.set_alpha(0.0)
 
     # Set up the Axes object for planes, satellites and scope
     north_offset = config["skycam"]["north_offset"] * pi/180
-    ax_symbols.patch.set_alpha(0)
     ax_symbols.set_ylim(0, 90)
     ax_symbols.set_theta_offset(north_offset)
     ax_symbols.tick_params(axis='x', colors='white')
