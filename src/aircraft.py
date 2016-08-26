@@ -167,6 +167,7 @@ class AircraftHandler:
         self.max_zenith = pi/2 - config["aircraft"]["min_altitude"] * RAD
         self.color = config["aircraft"]["color"]
         self.aircraft_list = {}
+        self.new_data = {}
         
     def update(self, events):
         if self.DEBUG >= 3:
@@ -174,23 +175,23 @@ class AircraftHandler:
         for event_type, element in events:
             if event_type == "start":
                 if element.tag == "MODESMESSAGE":
-                    new_data = {}
+                    self.new_data = {}
                 elif element.tag in USED_DATA_FIELDS:
-                    new_data[element.tag] = element.text
+                    self.new_data[element.tag] = element.text
             # When the MODESMESSAGE element ends, update the corresponding aircraft in
             # the list, or make a new one if necessary.
             elif event_type == "end" and element.tag == "MODESMESSAGE":
-                ID = new_data["MODES"]
+                ID = self.new_data["MODES"]
                 if ID in self.aircraft_list:
                     ac = self.aircraft_list[ID]
-                    ac.update(new_data)
+                    ac.update(self.new_data)
                     if ac.distance() > self.max_distance or ac.alt > self.max_zenith:
                         if self.DEBUG >= 2:
                             print("AircraftHandler: Deleting aircraft {}.".format(ID))
                         ac.clear()
                         self.aircraft_list.pop(ID, None)
                 else:
-                    ac = Aircraft(self.ax, self.config, new_data)
+                    ac = Aircraft(self.ax, self.config, self.new_data)
                     if ac.distance() <= self.max_distance and ac.alt < self.max_zenith:
                         if self.DEBUG >= 2:
                             print("AircraftHandler: Creating aircraft {}.".format(ID))
