@@ -81,6 +81,8 @@ def main(config_filename):
     ax_symbols.tick_params(axis='x', colors='white')
     ax_symbols.tick_params(axis='y', colors='white')
     ax_symbols.set_xticklabels(['N','NE','E','SE','S','SW','W','NW'])
+    ax_symbols.set_yticklabels(range(80, 0,-10))
+    ax_symbols.set_yticks(range(10, 100, 10))
     if not config["main"]["show_skycam"]:
         ax_symbols.xaxis.grid(color="white")
         ax_symbols.yaxis.grid(color="white")
@@ -88,9 +90,9 @@ def main(config_filename):
     
     horizon_ring = config["skycam"]["draw_horizon"]
     if horizon_ring > 0.0:
-        ax_symbols.add_artist(
-            Circle((0,0), 90 - horizon_ring, transform=ax_symbols.transData._b,
-                  color="white", fill=False))
+        ax_symbols.add_artist(Circle((0,0), 90 - horizon_ring, 
+                transform=ax_symbols.transData._b, color="white", fill=False))
+        ax_symbols.text(-1.5, 89-horizon_ring, "{}°".format(horizon_ring), color="white")
     
     # Set up the Axes for texts
     ax_texts.patch.set_color("black")
