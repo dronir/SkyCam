@@ -1,4 +1,4 @@
-import socket
+import telnetlib
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from ephem import separation
@@ -222,11 +222,10 @@ class AircraftListener:
     def listen(self):
         if self.DEBUG >= 1:
             print("AircraftListener: Initializing...")
-        source = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            source.connect((self.address, self.port))
+            source = telnetlib.Telnet(self.address, self.port)
         except:
-            print("AircraftListener: Error, unable to connect to socket.")
+            print("AircraftListener: Error, unable to connect to source.")
             return
         self.connected = True
         self.parser.feed("<DATASTREAM>")
@@ -238,7 +237,7 @@ class AircraftListener:
                     print("AircraftListener: Received shutdown signal.")
                 source.close()
                 break
-            data = source.recv(1024)
+            data = source.read_until(b"</MODESMESSAGE>")
             if not data:
                 print("AircraftListener: Error: end of stream received.")
                 source.close()
