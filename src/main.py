@@ -100,10 +100,11 @@ def main(config_filename):
     ax_texts.set_yticks([])
     
     # Set up the handler objects for the different drawings
+    data_lock = threading.Lock()
     Camera = CameraHandler(ax_skycam, config)
     Satellites = SatelliteHandler(ax_symbols, config)
     if config["main"]["show_aircraft"]:
-        Aircraft = AircraftHandler(ax_symbols, config)
+        Aircraft = AircraftHandler(ax_symbols, config, data_lock)
     else:
         Aircraft = None
     Scope = TelescopeHandler(ax_symbols, config)

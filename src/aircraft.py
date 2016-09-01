@@ -162,7 +162,7 @@ class Aircraft:
 
 
 class AircraftHandler:
-    def __init__(self, ax, config):
+    def __init__(self, ax, config, data_lock):
         self.config = config
         self.DEBUG = config["main"]["debug_level"]
         if self.DEBUG >= 1:
@@ -171,6 +171,7 @@ class AircraftHandler:
         self.max_distance = config["aircraft"]["max_distance"]
         self.max_zenith = pi/2 - config["aircraft"]["min_altitude"] * RAD
         self.color = config["aircraft"]["color"]
+        self.data_lock = data_lock
         self.aircraft_list = {}
         self.new_data = {}
         
@@ -186,6 +187,7 @@ class AircraftHandler:
             # When the MODESMESSAGE element ends, update the corresponding aircraft in
             # the list, or make a new one if necessary.
             elif event_type == "end" and element.tag == "MODESMESSAGE":
+                self.data_lock.acquire()
                 ID = self.new_data["MODES"]
                 if ID in self.aircraft_list:
                     ac = self.aircraft_list[ID]
@@ -201,13 +203,16 @@ class AircraftHandler:
                         if self.DEBUG >= 2:
                             print("AircraftHandler: Creating aircraft {}.".format(ID))
                         self.aircraft_list[ID] = ac
+                self.data_lock.release()
 
     def draw(self):
         if self.DEBUG >= 3:
             print("AircraftHandler: Drawing aircraft.")
+        self.data_lock.acquire()
         for ID in self.aircraft_list:
             aircraft = self.aircraft_list[ID]
             aircraft.draw()
+        self.data_lock.release()
         
 
 class AircraftListener:
