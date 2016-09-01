@@ -25,6 +25,7 @@ USED_DATA_FIELDS = [
     "DATETIME", "MODES", "CALLSIGN", "ALTITUDE", "VRATE",
     "GROUNDSPEED", "TRACK", "LATITUDE","LONGITUDE"
 ]
+CRITICAL_FIELDS = ["DATETIME", "ALTITUDE", "LATITUDE", "LONGITUDE"]
 
 # Some Metsähovi coordinates that are needed later
 HOVI_LAT = 60.217165 * RAD
@@ -63,8 +64,11 @@ class Aircraft:
         self.config = config
         self.color = config["aircraft"]["color"]
         self.color_warn = config["aircraft"]["color_warning"]
-        self.marker.set_alpha(0.5)
+        self.DEBUG = config["main"]["debug_level"]
+        self.callsign = ""
+        self.marker.set_alpha(1.0)
         ax.add_line(self.vector)
+        self.ok = True
         self.update(data)
         self.label = ax.text(0.0, 1000.0, self.callsign)
         self.label.set_size("small")
@@ -73,6 +77,10 @@ class Aircraft:
         """Update aircraft status with received data.
         Give default values for non-critical parameters, if they are missing from
         the broadcast. For critital parameters, mark the aircraft as not 'ok'."""
+        for field in CRITICAL_FIELDS:
+            if not field in data:
+                self.ok = False
+                return
         update_time = datetime.strptime(data["DATETIME"], "%Y%m%d%H%M%S")
         if update_time < self.last_updated:
             return
@@ -85,12 +93,9 @@ class Aircraft:
         self.heading = data.get("TRACK", None) 
         if not self.heading is None:
             self.heading = float(self.heading) * RAD
-        try:
-            self.lat = float(data["LATITUDE"]) * RAD
-            self.lon = float(data["LONGITUDE"]) * RAD
-            self.alt = float(data["ALTITUDE"]) * 0.0003048 # feet to km
-        except KeyError:
-            self.ok = False
+        self.lat = float(data["LATITUDE"]) * RAD
+        self.lon = float(data["LONGITUDE"]) * RAD
+        self.alt = float(data["ALTITUDE"]) * 0.0003048 # feet to km
         self.alt, self.az, self.valt, self.vaz = self.sky_position()
             
     def distance(self):
