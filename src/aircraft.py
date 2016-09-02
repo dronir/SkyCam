@@ -27,6 +27,12 @@ USED_DATA_FIELDS = [
 ]
 CRITICAL_FIELDS = ["DATETIME", "ALTITUDE", "LATITUDE", "LONGITUDE"]
 
+def verify_fields(data):
+    for field in CRITICAL_FIELDS:
+        if not field in data:
+            return False
+    return True
+
 # Some Metsähovi coordinates that are needed later
 HOVI_LAT = 60.217165 * RAD
 HOVI_LON = 24.394562 * RAD
@@ -64,6 +70,7 @@ class Aircraft:
         self.config = config
         self.color = config["aircraft"]["color"]
         self.color_warn = config["aircraft"]["color_warning"]
+        self.timeout = config["aircraft"]["data_timeout"]
         self.DEBUG = config["main"]["debug_level"]
         self.callsign = ""
         self.marker.set_alpha(1.0)
@@ -73,14 +80,11 @@ class Aircraft:
         self.label = ax.text(0.0, 1000.0, self.callsign)
         self.label.set_size("small")
         
+        
     def update(self, data):
         """Update aircraft status with received data.
         Give default values for non-critical parameters, if they are missing from
         the broadcast. For critital parameters, mark the aircraft as not 'ok'."""
-        for field in CRITICAL_FIELDS:
-            if not field in data:
-                self.ok = False
-                return
         update_time = datetime.strptime(data["DATETIME"], "%Y%m%d%H%M%S")
         if update_time < self.last_updated:
             return
@@ -134,10 +138,18 @@ class Aircraft:
     
     def draw(self):
         """Update the marker for this aircraft."""
+        now = datetime.now()
+        delta = now - self.last_updated
+        timeout = 60
+        if delta.seconds > self.timeout:
+            self.ok = False
+        if delta.seconds > 2*self.timeout:
+            return True
         if not self.ok:
             self.marker.set_color("gray")
-            return
-        if (self.config["aircraft"]["warn_nearby"]
+            self.vector.set_color("gray")
+            self.label.set_color("gray")
+        elif (self.config["aircraft"]["warn_nearby"]
                 and self.distance() < self.config["aircraft"]["nearby_distance"]):
             self.marker.set_color(self.color_warn)
             self.vector.set_color(self.color_warn)
@@ -152,9 +164,10 @@ class Aircraft:
             self.vector.set_xdata([az, vaz])
             self.vector.set_ydata([alt/RAD, valt/RAD])
         self.label.set_position((az, alt/RAD))
+        return False
     
     def clear(self):
-        """Clear the marker for this aircraft"""
+        """Clear the marker for this aircraft. Used when it's deleted from the list."""
         self.marker.remove()
         self.vector.remove()
         self.label.remove()
@@ -176,6 +189,7 @@ class AircraftHandler:
         self.new_data = {}
         
     def update(self, events):
+        """Receive a data update from the Listener and update the aircraft list."""
         if self.DEBUG >= 3:
             print("AircraftHandler: Received data update.")
         for event_type, element in events:
@@ -187,7 +201,8 @@ class AircraftHandler:
             # When the MODESMESSAGE element ends, update the corresponding aircraft in
             # the list, or make a new one if necessary.
             elif event_type == "end" and element.tag == "MODESMESSAGE":
-                self.data_lock.acquire()
+                if not verify_fields(self.new_data):
+                    return
                 ID = self.new_data["MODES"]
                 if ID in self.aircraft_list:
                     ac = self.aircraft_list[ID]
@@ -196,22 +211,32 @@ class AircraftHandler:
                         if self.DEBUG >= 2:
                             print("AircraftHandler: Deleting aircraft {}.".format(ID))
                         ac.clear()
-                        self.aircraft_list.pop(ID, None)
+                        self.data_lock.acquire()
+                        
+                        self.data_lock.release()
                 else:
                     ac = Aircraft(self.ax, self.config, self.new_data)
                     if ac.distance() <= self.max_distance and ac.alt < self.max_zenith:
                         if self.DEBUG >= 2:
                             print("AircraftHandler: Creating aircraft {}.".format(ID))
+                        self.data_lock.acquire()
                         self.aircraft_list[ID] = ac
-                self.data_lock.release()
+                        self.data_lock.release()
 
     def draw(self):
+        """Draw all of the aircraft onto the Axes."""
         if self.DEBUG >= 3:
             print("AircraftHandler: Drawing aircraft.")
+        to_delete = []
         self.data_lock.acquire()
         for ID in self.aircraft_list:
             aircraft = self.aircraft_list[ID]
-            aircraft.draw()
+            delete = aircraft.draw()
+            if delete:
+                aircraft.clear()
+                to_delete.append(ID)
+        for ID in to_delete:
+            self.aircraft_list.pop(ID, None)
         self.data_lock.release()
         
 

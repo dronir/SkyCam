@@ -8,7 +8,7 @@ show_skycam = true
 show_aircraft = true
 show_satellites = true
 show_scope = true # TODO (not implemented)
-debug_level = 1
+debug_level = 4
 
 [skycam]
 update_interval = 60 # seconds
@@ -26,7 +26,7 @@ trace_interval = 20 # seconds
 trace_forward = 6 # steps
 trace_backward = 2 # steps
 trace_show_time = true # TODO (not implemented)
-files = ["geodetic.txt", "iss.txt", "science.txt"]
+files = ["geodetic.txt", "iss.txt", "glo-ops.txt"]
 names = []
 min_altitude = 5.0 # degrees
 max_range = 370000.0
@@ -44,6 +44,7 @@ warn_zenith = true # TODO (not implemented)
 warn_scope = true # TODO (not implemented)
 warn_nearby = false
 nearby_distance = 20 # km
+data_timeout = 5 # seconds
 
 [telescope]
 address = "localhost"

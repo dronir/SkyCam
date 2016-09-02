@@ -69,8 +69,12 @@ when aircraft are either close to the zenith, near Metsähovi, or too close to t
 telescope pointing direction. They are not drawn if they are lower than `min_altitude` or
 farther away than `max_distance`.
 
-If the data stream breaks for some reason, the data listener exists. If this happens, the
+If the data stream breaks for some reason, the data listener dies. If this happens, the
 software must be restarted in order to begin listening for aircraft again.
+
+The `data_timeout` parameter is a time limit (in seconds). After this time, aircraft
+whose data has not been updated, will turn grey, and after twice that time, they will be
+deleted.
 
 ### Scope
 
