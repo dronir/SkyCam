@@ -6,17 +6,12 @@ from numpy import pi
 # The SatelliteHandler maintains a list of satellites and their locations, and draws them
 # on the given Axes object when requested.
 
-Hovi = ephem.Observer()
-Hovi.lat = "60.217165"
-Hovi.lon = "24.394562"
-Hovi.elevation = 95
-Hovi.date = datetime.datetime.utcnow()
-
 class SatelliteHandler:
     def __init__(self, ax, config):
         self.DEBUG = config["main"]["debug_level"]
         if self.DEBUG >= 1:
             print("SatelliteHandler: Initializing...")
+        self.ax = ax
         self.lists = config["satellite"]["list"]
         self.color = config["satellite"]["color"]
         self.show_label = config["satellite"]["show_names"]
@@ -24,16 +19,18 @@ class SatelliteHandler:
         self.trace_interval = config["satellite"]["trace_interval"]
         self.trace_forward = config["satellite"]["trace_forward"]
         self.trace_backward = config["satellite"]["trace_backward"]
-        self.trace_show_time = config["satellite"]["trace_show_time"]
         self.min_altitude = config["satellite"]["min_altitude"] * pi/180
         self.show_eclipsed = config["satellite"]["show_eclipsed"]
         self.max_range = config["satellite"]["max_range"] * 1000.0
-        self.ax = ax
-        self.observer = Hovi
+        self.observer = ephem.Observer()
+        self.observer.lat = config["location"]["latitude"]
+        self.observer.lon = config["location"]["longitude"]
+        self.observer.elevation = config["location"]["elevation"]
+        self.observer.date = datetime.datetime.utcnow()
         self.update()
         
     def update(self):
-        """Loads satellite orbit details from file."""
+        """Loads satellite orbit details from files."""
         for listname in self.lists:
             filename = "{}.txt".format(listname)
             if self.DEBUG >= 2:
