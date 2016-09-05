@@ -2,13 +2,13 @@
 # Olli Wilkman 2016
 
 [main]
-update_interval = 0.5 # seconds
+update_interval = 2 # seconds
 window_width = 16 # inches
 show_skycam = true
 show_aircraft = true
 show_satellites = true
 show_scope = true # TODO (not implemented)
-debug_level = 1
+debug_level = 4
 
 [skycam]
 update_interval = 60 # seconds
@@ -17,20 +17,6 @@ image_name = "ImageLastFTP_AllSKY.jpg"
 default_image = "image_blank.png"
 north_offset = -60 # degrees
 draw_horizon = 5 # degrees
-
-[satellite]
-color = "yellow"
-show_names = true
-show_traces = true
-trace_interval = 20 # seconds
-trace_forward = 6 # steps
-trace_backward = 2 # steps
-trace_show_time = true # TODO (not implemented)
-files = ["geodetic.txt", "iss.txt", "science.txt"]
-names = []
-min_altitude = 5.0 # degrees
-max_range = 370000.0
-show_eclipsed = true
 
 [aircraft]
 address = "localhost"
@@ -50,3 +36,42 @@ address = "localhost"
 port = 7879
 color_normal = "blue" # TODO (not implemented)
 color_warning = "red" # TODO (not implemented)
+
+[satellite]
+color = "yellow"
+show_names = true
+show_traces = true
+trace_interval = 20 # seconds
+trace_forward = 6 # steps
+trace_backward = 2 # steps
+trace_show_time = true # TODO (not implemented)
+min_altitude = 5.0 # degrees
+max_range = 370000.0
+show_eclipsed = true
+spacetrack_username = "your@email.com"
+spacetrack_password = "sup3r-s4fe-passw0rd"
+
+# Lists of satellite numbers. The 'show' parameters tells whether each list is
+# shown by default.
+
+[satellite.list.geodetic]
+show = true
+numbers = [7646, 8820, 16908, 22195, 22824, 27391, 27392, 38077]
+
+[satellite.list.GPS]
+show = true
+numbers = [24876, 25933, 26360, 26407, 26605, 26690, 27663, 27704, 28129, 28190, 28361,
+28474, 28874, 29486, 29601, 32260, 32384, 32711, 35752, 36585, 37753, 38833, 39166,
+39533, 39741, 40105, 40294, 40534, 40730, 41019, 41328]
+
+[satellite.list.Glonass]
+show = true
+numbers = [28915, 29670, 29671, 29672, 32275, 32276, 32393, 32395, 33379, 36111, 36112,
+36113, 36400, 36401, 36402, 37138, 37139, 37372, 37829, 37867, 37868, 37869, 39155,
+39620, 40001, 40315, 41330, 41554]
+
+[satellite.list.Galileo]
+show = true
+numbers = [37846, 37847, 38857, 38858, 40128, 40129, 40544, 40545, 40889, 40890, 41174,
+41175, 41549, 41550]
+
