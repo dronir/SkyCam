@@ -210,8 +210,8 @@ class AircraftHandler:
                     if ac.distance() > self.max_distance or ac.alt > self.max_zenith:
                         if self.DEBUG >= 2:
                             print("AircraftHandler: Deleting aircraft {}.".format(ID))
-                        ac.clear()
                         self.data_lock.acquire()
+                        ac.clear()
                         self.aircraft_list.pop(ID, None)
                         self.data_lock.release()
                 else:
