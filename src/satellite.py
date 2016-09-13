@@ -13,12 +13,13 @@ Hovi.elevation = 95
 Hovi.date = datetime.datetime.utcnow()
 
 class SatelliteHandler:
-    def __init__(self, ax, config):
+    def __init__(self, ax, ax_text, config):
         self.DEBUG = config["main"]["debug_level"]
         if self.DEBUG >= 1:
             print("SatelliteHandler: Initializing...")
-        self.names = config["satellite"]["names"]
-        self.filenames = config["satellite"]["files"]
+        self.ax = ax
+        self.ax_text = ax_text
+        self.lists = config["satellite"]["list"]
         self.color = config["satellite"]["color"]
         self.show_label = config["satellite"]["show_names"]
         self.show_trace = config["satellite"]["show_traces"]

@@ -59,7 +59,7 @@ def main(config_filename):
     # Create the different Axes for skycam image, aircraft/sat/scope symbols and texts
     ax_skycam = fig.add_subplot(311)
     ax_symbols = fig.add_subplot(312, polar=True)
-    ax_texts = fig.add_subplot(313)
+    ax_text = fig.add_subplot(313)
     ax_skycam.set_position((0.01, 0.02, 0.73, 0.96))
     
     wx,wy = 1.0, 1.01
@@ -67,7 +67,7 @@ def main(config_filename):
     cy = 0.487
     x, y = cx - wx/2, cy - wy/2
     ax_symbols.set_position((x, y, wx, wy))
-    ax_texts.set_position((0.75, 0.02, 0.2, 0.96))
+    ax_text.set_position((0.75, 0.02, 0.2, 0.96))
 
     # Set up the Axes object for the skycam
     ax_skycam.patch.set_color("black")
@@ -95,14 +95,14 @@ def main(config_filename):
         ax_symbols.text(-1.5, 89-horizon_ring, "{}°".format(horizon_ring), color="white")
     
     # Set up the Axes for texts
-    ax_texts.patch.set_color("black")
-    ax_texts.set_xticks([])
-    ax_texts.set_yticks([])
+    ax_text.patch.set_color("black")
+    ax_text.set_xticks([])
+    ax_text.set_yticks([])
     
     # Set up the handler objects for the different drawings
     data_lock = threading.Lock()
     Camera = CameraHandler(ax_skycam, config)
-    Satellites = SatelliteHandler(ax_symbols, config)
+    Satellites = SatelliteHandler(ax_symbols, ax_text, config)
     if config["main"]["show_aircraft"]:
         Aircraft = AircraftHandler(ax_symbols, config, data_lock)
     else:
