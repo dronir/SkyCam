@@ -212,7 +212,7 @@ class AircraftHandler:
                             print("AircraftHandler: Deleting aircraft {}.".format(ID))
                         ac.clear()
                         self.data_lock.acquire()
-                        
+                        self.aircraft_list.pop(ID, None)
                         self.data_lock.release()
                 else:
                     ac = Aircraft(self.ax, self.config, self.new_data)
