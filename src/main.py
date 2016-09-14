@@ -21,10 +21,12 @@ class Animator:
         self.show_skycam = config["main"]["show_skycam"]
         self.show_aircraft = config["main"]["show_aircraft"]
         self.show_satellites = config["main"]["show_satellites"]
+        self.show_scope = config["main"]["show_scope"]
         self.show_satellite_traces = config["satellite"]["show_traces"]
         self.Aircraft = Aircraft
         self.Camera = Camera
         self.Satellites = Sat
+        self.Telescope = Scope
         interval = config["main"]["update_interval"]
         self.trace_interval = int(config["satellite"]["trace_interval"] / interval)
         self.skycam_interval = int(config["skycam"]["update_interval"] / interval)
@@ -38,7 +40,9 @@ class Animator:
             self.Satellites.draw()
         if self.show_satellite_traces and (i % self.trace_interval == 0):
             self.Satellites.draw_traces()
-            
+        if self.show_scope:
+            self.Telescope.update_position()
+            self.Telescope.draw()
     def init(self):
         if self.show_skycam:
             self.Camera.draw_image()

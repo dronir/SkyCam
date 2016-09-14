@@ -28,6 +28,11 @@ The `debug_level` option, between 0 and 3, sets the amount of messages that are 
 while the software is running. The highest level can produce a lot of output and can slow
 down the drawing loop in the view, especially if there are several aircraft in the sky.
 
+### Location
+
+The coordinates and elevation of the observer are set here, for computing the sky
+positions of aircraft and satellites.
+
 ### Sky camera
 
 The `update_interval` is tells how often the image is read from disk and redrawn on the
@@ -78,6 +83,8 @@ deleted.
 
 ### Scope
 
-(Not yet implemented.)
+The program can ask the SLR telescope control computer for the pointing of the scope and
+draw that on the screen. The address and port of the control computer are given here, as
+well as the colours to use for the symbol.
 
 
