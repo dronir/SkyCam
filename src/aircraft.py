@@ -33,36 +33,34 @@ def verify_fields(data):
             return False
     return True
 
-# Some Metsähovi coordinates that are needed later
-HOVI_LAT = 60.217165 * RAD
-HOVI_LON = 24.394562 * RAD
-HOVI_COORD_RAD = (HOVI_LON, HOVI_LAT)
 EARTH_RADIUS = 6371.0
 
-# Construct a matrix to rotate geocentric positions to Metsähovi-centric by rotating
-# Metsähovi "to the north pole". This only needs to be done once.
-
-MatZ = array([
-    [cos(HOVI_LON), -sin(HOVI_LON), 0],
-    [sin(HOVI_LON),  cos(HOVI_LON), 0],
-    [0, 0, 1]
-])
-MatX = array([
-    [1, 0, 0],
-    [0, cos(pi/2-HOVI_LAT), -sin(pi/2-HOVI_LAT)],
-    [0, sin(pi/2-HOVI_LAT),  cos(pi/2-HOVI_LAT)]
-])
-HOVI_MATRIX = dot(MatX, MatZ)
-HOVI_CART = array([cos(HOVI_LAT)*sin(HOVI_LON), 
-                   cos(HOVI_LAT)*cos(HOVI_LON), 
-                   sin(HOVI_LAT)]) * (EARTH_RADIUS + 0.08)
-HOVI_POLE = array([0.0, 0.0, EARTH_RADIUS + 0.08])
+def get_matrix(lat, lon, h):
+    """This constructs the matrix needed to rotate aircraft locations into a coordinate
+    system where the axes are the observer's east, north and zenith directions."""
+    OBS_LAT = lat * RAD
+    OBS_LON = lon * RAD
+    OBS_COORD_RAD = (OBS_LON, OBS_LAT)
+    MatZ = array([
+        [cos(OBS_LON), -sin(OBS_LON), 0],
+        [sin(OBS_LON),  cos(OBS_LON), 0],
+        [0, 0, 1]
+    ])
+    MatX = array([
+        [1, 0, 0],
+        [0, cos(pi/2 - OBS_LAT), -sin(pi/2 - OBS_LAT)],
+        [0, sin(pi/2 - OBS_LAT),  cos(pi/2 - OBS_LAT)]
+    ])
+    OBS_MATRIX = dot(MatX, MatZ)
+    OBS_POLE = array([0.0, 0.0, EARTH_RADIUS + h / 1000])
+    return OBS_MATRIX, OBS_POLE, OBS_COORD_RAD
 
 
 class Aircraft:
-    def __init__(self, ax, config, data):
+    def __init__(self, ax, config, data, handler):
         self.last_updated = datetime(year=1903, month=12, day=17)
         self.ax = ax
+        self.handler = handler
         self.marker = ax.plot([], [], "D")[0]
         self.vector = Line2D([], [])
         self.vector.set_linewidth(2)
@@ -90,7 +88,7 @@ class Aircraft:
             return
         self.ok = True
         self.modes = data["MODES"]
-        self.callsign = data.get("CALLSIGN", "?")
+        self.callsign = data.get("CALLSIGN", "????")
         self.vrate = float(data.get("VRATE", 0.0)) / KNOTS
         self.speed = float(data.get("GROUNDSPEED", 0.0)) / FEET
         self.last_updated = update_time
@@ -104,7 +102,7 @@ class Aircraft:
             
     def distance(self):
         """Return ground distance from Metsähovi in km."""
-        sep = float(separation(HOVI_COORD_RAD, (self.lon, self.lat)))
+        sep = float(separation(self.handler.coord_rad, (self.lon, self.lat)))
         return sep * EARTH_RADIUS
     
     def velocity(self):
@@ -124,7 +122,7 @@ class Aircraft:
             cos(self.lon)*cos(self.lat),
             sin(self.lat)
         ]) * (EARTH_RADIUS + self.alt)
-        return dot(HOVI_MATRIX, R) - HOVI_POLE 
+        return dot(self.handler.matrix, R) - self.handler.pole 
     
     def sky_position(self):
         R = self.cartesian()
@@ -185,6 +183,10 @@ class AircraftHandler:
         self.max_zenith = pi/2 - config["aircraft"]["min_altitude"] * RAD
         self.color = config["aircraft"]["color"]
         self.data_lock = data_lock
+        lat = config["location"]["latitude"]
+        lon = config["location"]["longitude"]
+        elevation = config["location"]["elevation"]
+        self.matrix, self.pole, self.coord_rad = get_matrix(lat, lon, elevation)
         self.aircraft_list = {}
         self.new_data = {}
         
@@ -214,7 +216,7 @@ class AircraftHandler:
                             ac.clear()
                             self.aircraft_list.pop(ID, None)
                 else:
-                    ac = Aircraft(self.ax, self.config, self.new_data)
+                    ac = Aircraft(self.ax, self.config, self.new_data, self)
                     if ac.distance() <= self.max_distance and ac.alt < self.max_zenith:
                         if self.DEBUG >= 2:
                             print("AircraftHandler: Creating aircraft {}.".format(ID))
@@ -233,6 +235,8 @@ class AircraftHandler:
                     aircraft.clear()
                     to_delete.append(ID)
             for ID in to_delete:
+                if self.DEBUG >= 3:
+                    print("AircraftHandler: Deleting aircraft {}.".format(ID))
                 self.aircraft_list.pop(ID, None)
         
 
