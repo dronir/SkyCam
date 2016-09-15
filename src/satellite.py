@@ -34,28 +34,34 @@ class SatelliteHandler:
         """Loads satellite orbit details from files."""
         for listname in self.lists:
             filename = "{}.txt".format(listname)
+            self.lists[listname]["satellites"] = {}
             if self.DEBUG >= 2:
                 print("SatelliteHandler: Updating satellite list from '{}'.".format(filename))
             output = {}
-            with open(filename) as f:
-                while True:
-                    name = f.readline()
-                    if name == "":
-                        break
-                    name = name[2:].strip()
-                    line1 = f.readline().strip()
-                    line2 = f.readline().strip()
-                    sat = ephem.readtle(name, line1, line2)
-                    point = self.ax.plot([],[], "o")[0]
-                    trace = self.ax.plot([],[], "-")[0]
-                    label = self.ax.text(0.0, 0.0, "  " + name)
-                    label.set_visible(False)
-                    point.set_color(self.color)
-                    point.set_markersize(8)
-                    label.set_color(self.color)
-                    label.set_fontsize("x-small")
-                    trace.set_color(self.color)
-                    output[name] = (sat, point, label, trace)
+            try:
+                f = open(filename)
+            except IOError:
+                print("SatelliteHandler: Unable to open '{}'.".format(filename))
+                continue
+            while True:
+                name = f.readline()
+                if name == "":
+                    break
+                name = name[2:].strip()
+                line1 = f.readline().strip()
+                line2 = f.readline().strip()
+                sat = ephem.readtle(name, line1, line2)
+                point = self.ax.plot([],[], "o")[0]
+                trace = self.ax.plot([],[], "-")[0]
+                label = self.ax.text(0.0, 0.0, "  " + name)
+                label.set_visible(False)
+                point.set_color(self.color)
+                point.set_markersize(8)
+                label.set_color(self.color)
+                label.set_fontsize("x-small")
+                trace.set_color(self.color)
+                output[name] = (sat, point, label, trace)
+            f.close()
             self.lists[listname]["satellites"] = output
             if self.DEBUG >= 2:
                 sats = ", ".join(sorted(output.keys()))
