@@ -70,11 +70,13 @@ class SatelliteHandler:
     def draw(self):
         """Draw the satellites onto the Axes."""
         if self.DEBUG >= 3:
-            print("SatelliteHandler: Drawing satellites.")
+            print("SatelliteHandler: Drawing satellites...")
         self.observer.date = datetime.datetime.utcnow()
-        for sat_list in self.lists.values():
+        for list_name, sat_list in self.lists.items():
             if not sat_list["show"]:
                 continue
+            if self.DEBUG >= 4:
+                print("SatelliteHandler: ... {}.".format(list_name))
             for sat, point, label, trace in sat_list["satellites"].values():
                 sat.compute(self.observer)
                 alt = float(sat.alt)
