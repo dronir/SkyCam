@@ -144,7 +144,7 @@ class Aircraft:
         if delta.seconds > self.timeout:
             self.ok = False
         if delta.seconds > 2*self.timeout:
-            return True
+            return False
         if not self.ok:
             self.marker.set_color("gray")
             self.vector.set_color("gray")
@@ -164,7 +164,7 @@ class Aircraft:
             self.vector.set_xdata([az, vaz])
             self.vector.set_ydata([alt/RAD, valt/RAD])
         self.label.set_position((az, alt/RAD))
-        return False
+        return True
     
     def clear(self):
         """Clear the marker for this aircraft. Used when it's deleted from the list."""
@@ -210,34 +210,30 @@ class AircraftHandler:
                     if ac.distance() > self.max_distance or ac.alt > self.max_zenith:
                         if self.DEBUG >= 2:
                             print("AircraftHandler: Deleting aircraft {}.".format(ID))
-                        self.data_lock.acquire()
-                        ac.clear()
-                        self.aircraft_list.pop(ID, None)
-                        self.data_lock.release()
+                        with self.data_lock:
+                            ac.clear()
+                            self.aircraft_list.pop(ID, None)
                 else:
                     ac = Aircraft(self.ax, self.config, self.new_data)
                     if ac.distance() <= self.max_distance and ac.alt < self.max_zenith:
                         if self.DEBUG >= 2:
                             print("AircraftHandler: Creating aircraft {}.".format(ID))
-                        self.data_lock.acquire()
-                        self.aircraft_list[ID] = ac
-                        self.data_lock.release()
+                        with self.data_lock:
+                            self.aircraft_list[ID] = ac
 
     def draw(self):
-        """Draw all of the aircraft onto the Axes."""
+        """Draw all of the aircraft onto the Axes, deleting inactive ones."""
         if self.DEBUG >= 3:
             print("AircraftHandler: Drawing aircraft.")
-        to_delete = []
-        self.data_lock.acquire()
-        for ID in self.aircraft_list:
-            aircraft = self.aircraft_list[ID]
-            delete = aircraft.draw()
-            if delete:
-                aircraft.clear()
-                to_delete.append(ID)
-        for ID in to_delete:
-            self.aircraft_list.pop(ID, None)
-        self.data_lock.release()
+        with self.data_lock:
+            to_delete = []
+            for ID in self.aircraft_list:
+                aircraft = self.aircraft_list[ID]
+                if not aircraft.draw():
+                    aircraft.clear()
+                    to_delete.append(ID)
+            for ID in to_delete:
+                self.aircraft_list.pop(ID, None)
         
 
 class AircraftListener:
