@@ -72,7 +72,8 @@ class SatelliteRetriever:
             with open(filename, "w") as f:
                 if self.DEBUG >= 2:
                     print("SatelliteRetriever: Saving to {}...".format(filename))
-                f.write(data)
+                for line in data:
+                    f.write(line.strip())
         return True
                 
 
