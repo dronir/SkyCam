@@ -74,6 +74,7 @@ class SatelliteRetriever:
                     print("SatelliteRetriever: Saving to {}...".format(filename))
                 for line in data:
                     f.write(line.strip())
+                    f.write("\n")
         return True
                 
 
