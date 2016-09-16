@@ -69,12 +69,11 @@ class SatelliteRetriever:
                 print("SatelliteRetriever: {}".format(str(e)))
                 return False
             data = response.read().decode("utf-8")
+            data = data.replace("\r", "")
             with open(filename, "w") as f:
                 if self.DEBUG >= 2:
                     print("SatelliteRetriever: Saving to {}...".format(filename))
-                for line in data:
-                    f.write(line.strip())
-                    f.write("\n")
+                f.write(data)
         return True
                 
 
