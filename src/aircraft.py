@@ -203,24 +203,23 @@ class AircraftHandler:
             # When the MODESMESSAGE element ends, update the corresponding aircraft in
             # the list, or make a new one if necessary.
             elif event_type == "end" and element.tag == "MODESMESSAGE":
-                if not verify_fields(self.new_data):
-                    return
-                ID = self.new_data["MODES"]
-                if ID in self.aircraft_list:
-                    ac = self.aircraft_list[ID]
-                    ac.update(self.new_data)
-                    if ac.distance() > self.max_distance or ac.alt > self.max_zenith:
-                        if self.DEBUG >= 2:
-                            print("AircraftHandler: Deleting aircraft {}.".format(ID))
-                        with self.data_lock:
+                with self.data_lock:
+                    if not verify_fields(self.new_data):
+                        return
+                    ID = self.new_data["MODES"]
+                    if ID in self.aircraft_list:
+                        ac = self.aircraft_list[ID]
+                        ac.update(self.new_data)
+                        if ac.distance() > self.max_distance or ac.alt > self.max_zenith:
+                            if self.DEBUG >= 2:
+                                print("AircraftHandler: Deleting aircraft {}.".format(ID))
                             ac.clear()
                             self.aircraft_list.pop(ID, None)
-                else:
-                    ac = Aircraft(self.ax, self.config, self.new_data, self)
-                    if ac.distance() <= self.max_distance and ac.alt < self.max_zenith:
-                        if self.DEBUG >= 2:
-                            print("AircraftHandler: Creating aircraft {}.".format(ID))
-                        with self.data_lock:
+                    else:
+                        ac = Aircraft(self.ax, self.config, self.new_data, self)
+                        if ac.distance() <= self.max_distance and ac.alt < self.max_zenith:
+                            if self.DEBUG >= 2:
+                                print("AircraftHandler: Creating aircraft {}.".format(ID))
                             self.aircraft_list[ID] = ac
 
     def draw(self):
