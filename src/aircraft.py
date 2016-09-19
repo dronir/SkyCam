@@ -70,6 +70,8 @@ class Aircraft:
         self.color_warn = config["aircraft"]["color_warning"]
         self.timeout = config["aircraft"]["data_timeout"]
         self.DEBUG = config["main"]["debug_level"]
+        self.max_distance = config["aircraft"]["max_distance"]
+        self.max_zenith = pi/2 - config["aircraft"]["min_altitude"] * RAD
         self.callsign = ""
         self.marker.set_alpha(1.0)
         ax.add_line(self.vector)
@@ -138,11 +140,15 @@ class Aircraft:
         """Update the marker for this aircraft."""
         now = datetime.now()
         delta = now - self.last_updated
-        timeout = 60
         if delta.seconds > self.timeout:
             self.ok = False
-        if delta.seconds > 2*self.timeout:
+        if delta.seconds > 3*self.timeout:
             return False
+        if self.distance() > self.max_distance or self.alt > self.max_zenith:
+            self.marker.set_data([],[])
+            self.label.set_text("")
+            self.vector.set_data([],[])
+            return True
         if not self.ok:
             self.marker.set_color("gray")
             self.vector.set_color("gray")
@@ -156,12 +162,12 @@ class Aircraft:
             self.marker.set_color(self.color)
             self.vector.set_color(self.color)
             self.label.set_color(self.color)
-        alt, az, valt, vaz = self.alt, self.az, self.valt, self.vaz
-        self.marker.set_data([az], [alt/RAD])
+        self.marker.set_data([self.az], [self.alt/RAD])
         if self.config["aircraft"]["show_vectors"]:
-            self.vector.set_xdata([az, vaz])
-            self.vector.set_ydata([alt/RAD, valt/RAD])
-        self.label.set_position((az, alt/RAD))
+            self.vector.set_xdata([self.az, self.vaz])
+            self.vector.set_ydata([self.alt/RAD, self.valt/RAD])
+        self.label.set_text(self.callsign)
+        self.label.set_position((self.az, self.alt/RAD))
         return True
     
     def clear(self):
@@ -179,8 +185,6 @@ class AircraftHandler:
         if self.DEBUG >= 1:
             print("AircraftHandler: Initializing...")
         self.ax = ax
-        self.max_distance = config["aircraft"]["max_distance"]
-        self.max_zenith = pi/2 - config["aircraft"]["min_altitude"] * RAD
         self.color = config["aircraft"]["color"]
         self.data_lock = data_lock
         lat = config["location"]["latitude"]
@@ -210,17 +214,11 @@ class AircraftHandler:
                     if ID in self.aircraft_list:
                         ac = self.aircraft_list[ID]
                         ac.update(self.new_data)
-                        if ac.distance() > self.max_distance or ac.alt > self.max_zenith:
-                            if self.DEBUG >= 2:
-                                print("AircraftHandler: Deleting aircraft {}.".format(ID))
-                            ac.clear()
-                            self.aircraft_list.pop(ID, None)
                     else:
                         ac = Aircraft(self.ax, self.config, self.new_data, self)
-                        if ac.distance() <= self.max_distance and ac.alt < self.max_zenith:
-                            if self.DEBUG >= 2:
-                                print("AircraftHandler: Creating aircraft {}.".format(ID))
-                            self.aircraft_list[ID] = ac
+                        if self.DEBUG >= 2:
+                            print("AircraftHandler: Creating aircraft {}.".format(ID))
+                        self.aircraft_list[ID] = ac
 
     def draw(self):
         """Draw all of the aircraft onto the Axes, deleting inactive ones."""
