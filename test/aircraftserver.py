@@ -21,7 +21,7 @@ def position(T0):
     T = (dT % 15.0) / 15.0
     lat = Hlat - 0.02
     lon = Hlon + 0.02 * sin(2*pi*T)
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     return timestamp, lat, lon
 
 def serve():
