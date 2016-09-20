@@ -7,8 +7,8 @@ window_width = 16 # inches
 show_skycam = true
 show_aircraft = true
 show_satellites = true
-show_scope = true # TODO (not implemented)
-debug_level = 4
+show_scope = true
+debug_level = 2
 
 [location]
 latitude = 60.217165
@@ -39,8 +39,8 @@ data_timeout = 5 # seconds
 
 [telescope]
 address = "localhost"
-port = 7879
-color_normal = "blue" # TODO (not implemented)
+port = 9092
+color_normal = "purple"
 color_warning = "red" # TODO (not implemented)
 
 [satellite]
@@ -50,10 +50,10 @@ show_traces = true
 trace_interval = 20 # seconds
 trace_forward = 6 # steps
 trace_backward = 2 # steps
-trace_show_time = true # TODO (not implemented)
 min_altitude = 5.0 # degrees
 max_range = 370000.0
 show_eclipsed = true
+get_orbits_on_startup = true # TODO (not implemented)
 spacetrack_username = "your@email.com"
 spacetrack_password = "sup3r-s4fe-passw0rd"
 
@@ -77,7 +77,7 @@ numbers = [28915, 29670, 29671, 29672, 32275, 32276, 32393, 32395, 33379, 36111,
 39620, 40001, 40315, 41330, 41554]
 
 [satellite.list.Galileo]
-show = true
+show = false
 numbers = [37846, 37847, 38857, 38858, 40128, 40129, 40544, 40545, 40889, 40890, 41174,
 41175, 41549, 41550]
 
