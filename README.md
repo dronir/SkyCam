@@ -10,11 +10,13 @@ these are in PyPI so to install them, `pip install matplotlib scipy pyephem toml
 be enough. Using a `virtualenv` with Python 3 and the required packages might be a good
 idea.
 
+If you want to plot satellites, you first need to fetch fresh orbital elements from
+[Space-Track](www.space-track.com). This is done by running `python src/spacetrack.py
+config.toml`. Note that you need to put your username and password into the config file.
 
 ## Configuration
 
-The configuration file is in the TOML format (a simple and elegant config file standard).
-An example file is provided and the configuration options are mostly self-evident.
+The configuration file is in the TOML format. An example file, `config.toml` is provided.
 
 ### Main
 
@@ -59,12 +61,17 @@ sets the length of one step in the trace, as well as how often the traces are re
 The full length of the trace is set with `trace_forward` and `trace_backward`, which
 determine the number of steps backwards and forwards the trace is drawn.
 
-The `files` variable is a list of strings, giving the files which contain the satellite
-orbital parameters in TLE (two-line element) form. The `names` variable is a list of
-strings that can optionally be empty. Only those satellites are drawn whose name, as it
-appears in the orbit files, is found in this list. If the list is empty, all satellites
-in the given orbit files are drawn.
+Satellite orbital elements are fetched from [Space-Track](www.space-track.com) with the
+`spacetrack.py` program. The username and password for the service must be provided in
+the configuration file.
 
+The satellites to be downloaded and shown are given in the `[satellite.list.name]`
+blocks, where `name` is an arbitrary string that will be used as the filename. These
+blocks have a variable `show`, which determines whether that list of satellites is drawn
+on screen by default, and `numbers`, which is a list of satellites ID numbers to fetch
+from the [Space-Track](www.space-track.com) database. The `numbers` list is used only by
+`spacetrack.py`. The main program only searches for orbital elements in the files given
+by the `name` strings.
 
 ### Aircraft
 
