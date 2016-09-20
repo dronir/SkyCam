@@ -53,7 +53,7 @@ trace_backward = 2 # steps
 min_altitude = 5.0 # degrees
 max_range = 370000.0
 show_eclipsed = true
-get_orbits_on_startup = true # TODO (not implemented)
+get_orbits_on_startup = false
 spacetrack_username = "your@email.com"
 spacetrack_password = "sup3r-s4fe-passw0rd"
 

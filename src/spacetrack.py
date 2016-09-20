@@ -44,6 +44,9 @@ class SatelliteRetriever:
     def download_data(self):
         """Go through all satellite lists and download the orbital elements."""
         
+        if self.DEBUG >= 1:
+            print("SatelliteRetriever: Downloading data...")
+        
         delta = datetime.now() - self.last_login
         if delta.seconds > 5400:
             if self.DEBUG >= 2:

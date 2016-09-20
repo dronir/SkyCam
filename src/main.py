@@ -2,6 +2,7 @@ from satellite import SatelliteHandler
 from scope import TelescopeHandler
 from camera import CameraHandler
 from aircraft import AircraftHandler, AircraftListener
+from spacetrack import SatelliteRetriever
 
 from numpy import pi
 import matplotlib as mpl
@@ -102,6 +103,11 @@ def main(config_filename):
     ax_text.patch.set_color("black")
     ax_text.set_xticks([])
     ax_text.set_yticks([])
+    
+    # Download orbital elements
+    if config["satellite"]["get_orbits_on_startup"]:
+        SR = SatelliteRetriever(config)
+        SR.download_data()
     
     # Set up the handler objects for the different drawings
     data_lock = threading.Lock()
