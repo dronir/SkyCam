@@ -9,6 +9,7 @@ class TelescopeHandler:
         self.address = config["telescope"]["address"]
         self.port = int(config["telescope"]["port"])
         self.color_normal = config["telescope"]["color_normal"]
+        self.color_warn = config["telescope"]["color_warning"]
         self.active = False
         self.ax = ax
         self.position = (1.570796327, 0.0)
@@ -21,6 +22,7 @@ class TelescopeHandler:
         self.circle.set_color(self.color_normal)
         self.cross.set_color(self.color_normal)
         self.cross.set_markersize(20)
+        self.warn = False
     
     def update_position(self):
         """Poll control computer for telescope pointing direction."""
@@ -43,22 +45,29 @@ class TelescopeHandler:
         azimuth = 0.0
         for line in data.split("\n"):
             if "elevation" in line:
-                elevation = float(line.split("=")[1])
+                elevation = float(line.split("=")[1]) * pi/180
             if "azimuth" in line:
                 azimuth = float(line.split("=")[1]) * pi/180
-        self.position = (90-elevation, azimuth)
-        
+        # Elevation from horizon; both angles in radians
+        self.position = (elevation, azimuth)
     
     def draw(self):
         """Draw symbol for telescope pointing onto axes."""
         if self.visible:
+            if self.warn:
+                self.circle.set_color(self.color_warn)
+                self.cross.set_color(self.color_warn)
+            else:
+                self.circle.set_color(self.color_normal)
+                self.cross.set_color(self.color_normal)
             alt, az = self.position
+            # Convert alt into zenith angle in degrees
+            alt = 90 - alt*180/pi
             if self.DEBUG >= 2:
                 print("TelescopeHandler: Drawing scope at alt={:.2f}°, az={:.2f}°.".format(
                     90-alt, az*180/pi))
             self.circle.set_data([az], [alt])
             self.cross.set_data([az], [alt])
-        else:
-            pass
+        self.warn = False
 
     
