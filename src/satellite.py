@@ -24,8 +24,8 @@ class SatelliteHandler:
         self.show_eclipsed = config["satellite"]["show_eclipsed"]
         self.max_range = config["satellite"]["max_range"] * 1000.0
         self.observer = ephem.Observer()
-        self.observer.lat = config["location"]["latitude"]
-        self.observer.lon = config["location"]["longitude"]
+        self.observer.lat = str(config["location"]["latitude"])
+        self.observer.lon = str(config["location"]["longitude"])
         self.observer.elevation = config["location"]["elevation"]
         self.observer.date = datetime.datetime.utcnow()
         self.update()
